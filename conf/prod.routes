@@ -1,5 +1,5 @@
 # Add all the application routes to the app.routes file
-->         /pact-broker-frontend                    app.Routes
+->         /pact-broker-frontend      app.Routes
 ->         /                          health.Routes
 ->     	   /template                  template.Routes
 

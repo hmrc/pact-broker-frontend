@@ -1,13 +1,7 @@
 # microservice specific routes
 
-GET        /                                            controllers.IndexController.onPageLoad
+GET        /assets/*file                                @controllers.Assets.versioned(path="/public", file: Asset)
 
-GET        /assets/*file                                controllers.Assets.versioned(path="/public", file: Asset)
-
-GET        /language/:lang                              controllers.LanguageSwitchController.switchToLanguage(lang: String)
-
-GET        /this-service-has-been-reset                 controllers.SessionExpiredController.onPageLoad
-
-GET        /check-your-answers                          controllers.CheckYourAnswersController.onPageLoad
-
-GET        /unauthorised                                controllers.UnauthorisedController.onPageLoad
+PUT        /pacts/provider/:producerId/consumer/:consumerId/version/:version      @controllers.ConsumerController.addPactTest(producerId, consumerId, version)
+GET        /pacts/provider/:producerId/consumer/:consumerId/latest                @controllers.ConsumerController.getLatestPact(producerId, consumerId)
+GET        /pacts/provider/:producerId/consumer/:consumerId/version/:version      @controllers.ConsumerController.getVersionedPact(producerId, consumerId,version)
