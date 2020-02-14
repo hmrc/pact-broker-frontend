@@ -25,10 +25,10 @@ sbt 'run -Dapplication.router=testOnlyDoNotUseInAppConf.Routes
 
     | Path                                                                                        | Supported Methods | Description                                              |
     |---------------------------------------------------------------------------------------------|-------------------|----------------------------------------------------------|
-    | /pact-broker-frontend/pacts/provider/:producerId/consumer/:consumerId/version/:version            | PUT               | inserts a pact into the database                         |
-    | /pact-broker-frontend/pacts/provider/:producerId/consumer/:consumerId/version/:version            | GET               | retrieve a specified pact between two services           |
-    | /pact-broker-frontend/pacts/provider/:producerId/consumer/:consumerId/latest                      | GET               | retrieve the most up to date pact between two services   |
-    | /pact-broker-frontend/test-only/pacts/provider/:producerId/consumer/:consumerId/version/:version  | DELETE            | removes a pact from the database                         |
+    | /pact-broker/pacts/provider/:producerId/consumer/:consumerId/version/:version            | PUT               | inserts a pact into the database                         |
+    | /pact-broker/pacts/provider/:producerId/consumer/:consumerId/version/:version            | GET               | retrieve a specified pact between two services           |
+    | /pact-broker/pacts/provider/:producerId/consumer/:consumerId/latest                      | GET               | retrieve the most up to date pact between two services   |
+    | /pact-broker/test-only/pacts/provider/:producerId/consumer/:consumerId/version/:version  | DELETE            | removes a pact from the database                         |
 
 ## PUT /pact-request
 

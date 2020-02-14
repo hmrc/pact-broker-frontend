@@ -4,7 +4,7 @@ import play.api.http.Status.{CONFLICT, INTERNAL_SERVER_ERROR, NOT_FOUND, OK}
 import play.api.libs.json.Json
 import support.PactBrokerScISpec
 
-class ConsumerControllerISpec extends PactBrokerScISpec{
+class ConsumerControllerISpec extends PactBrokerScISpec {
 
   override def additionalConfig: Map[String, _] = Map( "application.router" -> "testOnlyDoNotUseInAppConf.Routes")
 
