@@ -11,7 +11,7 @@ lazy val externalServices = List(
   ExternalService("DATASTREAM")
 )
 
-lazy val root = (project in file("."))
+lazy val root = Project(appName, file("."))
   .enablePlugins(play.sbt.PlayScala, SbtAutoBuildPlugin, SbtGitVersioning, SbtDistributablesPlugin, SbtArtifactory)
   .settings(
     majorVersion                     := 0,
