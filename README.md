@@ -1,7 +1,6 @@
 
 # pact-broker-frontend
 
-
 ##Pact Broker
 A pact broker allows consumer services to store pacts in a central location and then provide services to verify against these versioned, centrally located pacts. This prevents the teams responsible for the consuming services having to send updated pacts to the provider services teams to update their projects or raising pull requests against the services.
 
