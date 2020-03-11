@@ -64,13 +64,13 @@ class ConsumerControllerISpec extends PactBrokerScISpec {
       }
     }
 
-    "return 409" when {
+    "return 200" when {
       "PACT in body is valid but it conflict with a pact that already exists" in {
         withClient {
           wsClient => {
             await(wsClient.url(resource(putUrl())).addHttpHeaders(contentAsJson).put(Json.toJson(pact)))
             val result = await(wsClient.url(resource(putUrl())).addHttpHeaders(contentAsJson).put(Json.toJson(alternativePact)))
-            result.status shouldBe CONFLICT
+            result.status shouldBe OK
             val deleteResult = await(wsClient.url(resource(deleteUrl())).addHttpHeaders(contentAsJson).delete())
             deleteResult.status shouldBe OK
           }

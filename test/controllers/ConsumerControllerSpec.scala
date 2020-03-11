@@ -73,11 +73,11 @@ class ConsumerControllerSpec extends UnitSpec with MockitoSugar with GuiceOneApp
       status(result) shouldBe OK
     }
 
-    "will return conflict when a pact has the same provider, consumer and version but has a different body in the database" in new SetUp {
+    "will return OK when a pact has the same provider, consumer and version but has a different body in the database" in new SetUp {
       when(mockPactBrokerRepository.find(any(), any(), any())).thenReturn(Future.successful(Some(differentPactWithVersion)))
       when(mockPactBrokerRepository.add(any())).thenReturn(Future.successful(successWriteResult))
       val result: Future[Result] = consumerController.addPactTest("Producer", "consumer", "1.0.0")(goodRequest)
-      status(result) shouldBe CONFLICT
+      status(result) shouldBe OK
     }
 
     "will return InternalServerError when a pact can not be inserted" in new SetUp {
