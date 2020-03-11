@@ -31,7 +31,6 @@ class ConsumerController @Inject()(override val controllerComponents:ControllerC
   extends BackendBaseController {
 
   def addPactTest(producerId: String, consumerId: String, version: String): Action[JsValue] = Action.async(parse.json) { implicit request =>
-
     request.body.validate[Pact].fold(
       errors => Future.successful(BadRequest(errors.mkString)),
       { pactBody =>
@@ -47,9 +46,8 @@ class ConsumerController @Inject()(override val controllerComponents:ControllerC
         for {
           exists <- repo.find(consumerId, producerId, version)
           result <- exists match {
-            case None => insertPact(pact)
             case Some(res) if res.interactions == pact.interactions => Future.successful(Ok)
-            case Some(_) => Future.successful(Conflict)
+            case _ => insertPact(pact)
           }
         } yield result
       }
