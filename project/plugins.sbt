@@ -4,11 +4,15 @@ resolvers += "HMRC Releases" at "https://dl.bintray.com/hmrc/releases"
 
 resolvers += "Typesafe Releases" at "http://repo.typesafe.com/typesafe/releases/"
 
+resolvers += Resolver.url(
+  "HMRC Private Sbt Plugin Releases",
+  url("https://artefacts.tax.service.gov.uk/artifactory/hmrc-sbt-plugin-releases-local"))(Resolver.ivyStylePatterns)
+
 addSbtPlugin("uk.gov.hmrc" % "sbt-auto-build" % "2.6.0")
 
 addSbtPlugin("uk.gov.hmrc" % "sbt-git-versioning" % "2.1.0")
 
-addSbtPlugin("uk.gov.hmrc" % "sbt-service-manager" % "0.4.0")
+addSbtPlugin("uk.gov.hmrc" % "sbt-service-manager" % "0.6.0")
 
 addSbtPlugin("uk.gov.hmrc" % "sbt-artifactory" % "1.2.0")
 
