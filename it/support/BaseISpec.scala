@@ -2,9 +2,9 @@ package support
 
 import org.scalatest.{LoneElement, Matchers, WordSpecLike}
 import play.api.test.WsTestClient
-import play.api.{Configuration, Environment, Mode}
+import play.api.{Configuration, Environment}
 import uk.gov.hmrc.integration.ServiceSpec
-import uk.gov.hmrc.play.bootstrap.config.{RunMode, ServicesConfig}
+import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
 
 import scala.concurrent.duration._
 import scala.concurrent.{Await, Future}
@@ -21,7 +21,7 @@ trait BaseISpec extends WordSpecLike with Matchers with ServiceSpec with WsTestC
 
   val env: Environment = Environment.simple()
   val configuration: Configuration = Configuration.load(env)
-  val serviceConfig: ServicesConfig = new ServicesConfig(configuration,new RunMode(configuration,Mode.Dev))
+  val serviceConfig: ServicesConfig = new ServicesConfig(configuration)
 
   implicit val timeout: Duration = 3 minutes
 
