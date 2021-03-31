@@ -3,7 +3,7 @@ import uk.gov.hmrc.DefaultBuildSettings.integrationTestSettings
 import uk.gov.hmrc.ServiceManagerPlugin.Keys.itDependenciesList
 import uk.gov.hmrc.ServiceManagerPlugin.serviceManagerSettings
 import uk.gov.hmrc.sbtdistributables.SbtDistributablesPlugin.publishingSettings
-import uk.gov.hmrc.{ExternalService, SbtArtifactory}
+import uk.gov.hmrc.ExternalService
 
 lazy val appName: String = "pact-broker-frontend"
 
@@ -12,7 +12,7 @@ lazy val externalServices = List(
 )
 
 lazy val root = Project(appName, file("."))
-  .enablePlugins(play.sbt.PlayScala, SbtAutoBuildPlugin, SbtGitVersioning, SbtDistributablesPlugin, SbtArtifactory)
+  .enablePlugins(play.sbt.PlayScala, SbtAutoBuildPlugin, SbtGitVersioning, SbtDistributablesPlugin)
   .settings(
     majorVersion                     := 0,
     libraryDependencies              ++= AppDependencies.compile ++ AppDependencies.test
