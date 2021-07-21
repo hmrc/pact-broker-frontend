@@ -12,7 +12,7 @@ lazy val externalServices = List(
 )
 
 lazy val root = Project(appName, file("."))
-  .enablePlugins(play.sbt.PlayScala, SbtGitVersioning, SbtDistributablesPlugin)
+  .enablePlugins(play.sbt.PlayScala, SbtDistributablesPlugin)
   .settings(
     majorVersion                     := 0,
     libraryDependencies              ++= AppDependencies.compile ++ AppDependencies.test
