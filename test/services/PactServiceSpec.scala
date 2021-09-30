@@ -18,7 +18,7 @@ package services
 
 import helpers.UnitSpec
 import models.{MDTPService, Pact, PactWithVersion}
-import org.scalatestplus.mockito.MockitoSugar
+import org.mockito.MockitoSugar
 import org.scalatestplus.play.guice.GuiceOneAppPerSuite
 import play.api.libs.json.Json
 import play.api.mvc.Results
