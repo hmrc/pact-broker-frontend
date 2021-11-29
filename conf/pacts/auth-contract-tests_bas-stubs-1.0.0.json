@@ -1,0 +1,73 @@
+{
+  "provider" : {
+    "name" : "bas-stubs"
+  },
+  "consumer" : {
+    "name" : "auth-contract-tests"
+  },
+  "interactions" : [
+    {
+      "description" : "adding account",
+      "request" : {
+        "method" : "PUT",
+        "path" : "/bas-stubs/account",
+        "headers" : {
+          "Content-Type" : "application/json"
+        },
+        "body" : {
+          "groupId" : "9F9416A1-3977-4FC1-AB5E-0352417FD5B7",
+          "groupProfile" : "groupcred-id-1234",
+          "name" : "TestName",
+          "suspended" : false,
+          "email" : "default@example.com",
+          "emailVerified" : true,
+          "emailStatus" : "status",
+          "description" : "description",
+          "profile" : "profile",
+          "nonce" : "hello",
+          "sessionId" : "1234567",
+          "agentId" : "AddamsAgents",
+          "agentCode" : "AddamsAgents",
+          "agentName" : "Addams Agents",
+          "isAdmin" : true,
+          "userId" : "040619113000",
+          "roles" : [
+            "Administrator",
+            "User"
+          ],
+          "credId" : "cred-id-1234",
+          "trustId" : "trust-test-123"
+        },
+        "matchingRules" : {
+          "$.body.groupId" : {
+            "match" : "regex",
+            "regex" : "^([a-zA-Z0-9-]+)$"
+          },
+          "$.body.groupProfile" : {
+            "match" : "regex",
+            "regex" : "^([a-zA-Z0-9-]+)$"
+          },
+          "$.body.credId" : {
+            "match" : "regex",
+            "regex" : "^([a-zA-Z0-9-]+)$"
+          },
+          "$.body.trustId" : {
+            "match" : "regex",
+            "regex" : "^([a-zA-Z0-9-]+)$"
+          }
+        }
+      },
+      "response" : {
+        "status" : 201
+      }
+    }
+  ],
+  "metadata" : {
+    "pactSpecification" : {
+      "version" : "2.0.0"
+    },
+    "scala-pact" : {
+      "version" : "2.4.0"
+    }
+  }
+}

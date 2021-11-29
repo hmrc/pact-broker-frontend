@@ -1,0 +1,133 @@
+{
+  "provider" : {
+    "name" : "affinity-group"
+  },
+  "interactions" : [
+    {
+      "request" : {
+        "method" : "POST",
+        "body" : {
+          "groupId" : "7e902c7e-c7f6-442e-97df-509d477d8507",
+          "accountType" : "AGENT",
+          "agentDetails" : {
+            "agentId" : "001234",
+            "agentCode" : "c2e53f4d-d1",
+            "agentFriendlyName" : "Some Agent"
+          }
+        },
+        "path" : "/affinity-group/groups",
+        "matchingRules" : {
+          "$.body.groupId" : {
+            "match" : "regex",
+            "regex" : "[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}"
+          },
+          "$.body.accountType" : {
+            "match" : "regex",
+            "regex" : "INDIVIDUAL|AGENT|ORGANISAION"
+          }
+        },
+        "headers" : {
+          "Content-Type" : "application/json"
+        }
+      },
+      "description" : "add first group with groupID 7e902c7e-c7f6-442e-97df-509d477d8507 of two identical groups and expect 201",
+      "response" : {
+        "status" : 201
+      }
+    },
+    {
+      "request" : {
+        "method" : "POST",
+        "body" : {
+          "groupId" : "7e902c7e-c7f6-442e-97df-509d477d8507",
+          "accountType" : "AGENT",
+          "agentDetails" : {
+            "agentId" : "001234",
+            "agentCode" : "c2e53f4d-d1",
+            "agentFriendlyName" : "Some Agent"
+          }
+        },
+        "path" : "/affinity-group/groups",
+        "matchingRules" : {
+          "$.body.groupId" : {
+            "match" : "regex",
+            "regex" : "[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}"
+          },
+          "$.body.accountType" : {
+            "match" : "regex",
+            "regex" : "INDIVIDUAL|AGENT|ORGANISAION"
+          }
+        },
+        "headers" : {
+          "Content-Type" : "application/json"
+        }
+      },
+      "description" : "add second identical group with groupID 7e902c7e-c7f6-442e-97df-509d477d8507 and expect 200",
+      "response" : {
+        "status" : 200
+      }
+    },
+    {
+      "request" : {
+        "method" : "POST",
+        "body" : {
+          "groupId" : "f5cb9ee7-8547-444a-b2f6-cd47bc25fca3",
+          "accountType" : "AGENT",
+          "agentDetails" : {
+            "agentId" : "001234",
+            "agentCode" : "92448f5e-cb",
+            "agentFriendlyName" : "Some Agent"
+          }
+        },
+        "path" : "/affinity-group/groups",
+        "matchingRules" : {
+          "$.body.groupId" : {
+            "match" : "regex",
+            "regex" : "[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}"
+          },
+          "$.body.accountType" : {
+            "match" : "regex",
+            "regex" : "INDIVIDUAL|AGENT|ORGANISAION"
+          }
+        },
+        "headers" : {
+          "Content-Type" : "application/json"
+        }
+      },
+      "description" : "Add group with groupID f5cb9ee7-8547-444a-b2f6-cd47bc25fca3 and expect 201",
+      "response" : {
+        "status" : 201
+      }
+    },
+    {
+      "request" : {
+        "method" : "GET",
+        "path" : "/affinity-group/groups/f5cb9ee7-8547-444a-b2f6-cd47bc25fca3"
+      },
+      "description" : "retrieve the group with groupID f5cb9ee7-8547-444a-b2f6-cd47bc25fca3 that we just added",
+      "response" : {
+        "status" : 200,
+        "body" : {
+          "groupId" : "f5cb9ee7-8547-444a-b2f6-cd47bc25fca3",
+          "accountType" : "AGENT",
+          "agentDetails" : {
+            "agentId" : "001234",
+            "agentCode" : "92448f5e-cb",
+            "agentFriendlyName" : "Some Agent"
+          }
+        }
+      }
+    }
+  ],
+  "consumer" : {
+    "name" : "gg-contract-tests"
+  },
+  "metadata" : {
+    "pactSpecification" : {
+      "version" : "2.0.0"
+    },
+    "scala-pact" : {
+      "version" : "2.3.16"
+    }
+  }
+}

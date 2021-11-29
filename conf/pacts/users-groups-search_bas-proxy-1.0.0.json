@@ -1,0 +1,314 @@
+{
+  "provider" : {
+    "name" : "bas-proxy"
+  },
+  "consumer" : {
+    "name" : "users-groups-search"
+  },
+  "interactions" : [
+    {
+      "description" : "Get user by credId",
+      "request" : {
+        "method" : "GET",
+        "path" : "/bas-proxy/credentials/cred-id-1234",
+        "headers" : {
+          "Content-Type" : "application/json"
+        },
+        "matchingRules" : {
+          "$.body.credId" : {
+            "match" : "regex",
+            "regex" : "^([a-zA-Z0-9-]+)$"
+          }
+        }
+      },
+      "response" : {
+        "status" : 200,
+        "body" : {
+          "sub" : "cred-id-1234",
+          "roles" : [
+            "Administrator",
+            "User"
+          ],
+          "groupId" : "9F9416A1-3977-4FC1-AB5E-0352417FD5B7",
+          "trustId" : "80132d01-a652-4286-8048-05680fa56c37",
+          "name" : "TestName",
+          "suspended" : false,
+          "email" : "default@example.com",
+          "emailVerified" : true
+        },
+        "matchingRules" : {
+          "$.body.groupId" : {
+            "match" : "regex",
+            "regex" : "^([a-zA-Z0-9-]+)$"
+          },
+          "$.body.email" : {
+            "match" : "regex",
+            "regex" : "(?=[^\\s]+)(?=(\\w+)@([\\w\\.]+))"
+          },
+          "$.body.emailVerified" : {
+            "match" : "regex",
+            "regex" : "true|false"
+          },
+          "$.body.credId" : {
+            "match" : "regex",
+            "regex" : "^([a-zA-Z0-9-]+)$"
+          },
+          "$.body.suspended" : {
+            "match" : "regex",
+            "regex" : "true|false"
+          },
+          "$.body.trustId" : {
+            "match" : "regex",
+            "regex" : "^([a-zA-Z0-9-]+)$"
+          }
+        }
+      }
+    },
+    {
+      "description" : "Get GroupId By Agent Code",
+      "request" : {
+        "method" : "GET",
+        "path" : "/bas-proxy/agents/AddamsAgents",
+        "headers" : {
+          "Content-Type" : "application/json"
+        },
+        "matchingRules" : {
+          "$.body.groupId" : {
+            "match" : "regex",
+            "regex" : "^([a-zA-Z0-9-]+)$"
+          }
+        }
+      },
+      "response" : {
+        "status" : 200,
+        "body" : {
+          "groupId" : "9F9416A1-3977-4FC1-AB5E-0352417FD5B7"
+        },
+        "matchingRules" : {
+          "$.body.groupId" : {
+            "match" : "regex",
+            "regex" : "^([a-zA-Z0-9-]+)$"
+          }
+        }
+      }
+    },
+    {
+      "description" : "Get user factors by credId",
+      "request" : {
+        "method" : "GET",
+        "path" : "/bas-proxy/credentials/cred-id-1234/factors",
+        "headers" : {
+          "Content-Type" : "application/json"
+        },
+        "matchingRules" : {
+          "$.body.credId" : {
+            "match" : "regex",
+            "regex" : "^([a-zA-Z0-9-]+)$"
+          }
+        }
+      },
+      "response" : {
+        "status" : 200,
+        "body" : {
+          "sub" : "cred-id-1234",
+          "userId" : {
+            "createdDate" : "2016-10-16T14:40:25Z",
+            "lastResent" : {
+              "date" : "2016-10-16T14:40:25Z",
+              "source" : "adminapi"
+            }
+          },
+          "password" : {
+            "authType" : "password",
+            "status" : "locked",
+            "lastChangedDate" : "2016-10-19T15:40:25Z",
+            "lastReset" : {
+              "date" : "2016-10-19T14:40:25Z",
+              "source" : "adminapi"
+            },
+            "lockedUntil" : "2018-10-19T14:40:25Z"
+          },
+          "recoveryWord" : true
+        },
+        "matchingRules" : {
+          "$.body.recoveryWord" : {
+            "match" : "regex",
+            "regex" : "true|false"
+          },
+          "$.body.password.lockedUntil" : {
+            "match" : "regex",
+            "regex" : "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}[^.]+$"
+          },
+          "$.body.userId.lastResent.source" : {
+            "match" : "regex",
+            "regex" : "^([a-zA-Z0-9-]+)$"
+          },
+          "$.body.userId.lastResent.date" : {
+            "match" : "regex",
+            "regex" : "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}[^.]+$"
+          },
+          "$.body.userId.createdDate" : {
+            "match" : "regex",
+            "regex" : "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}[^.]+$"
+          },
+          "$.body.password.lastReset.date" : {
+            "match" : "regex",
+            "regex" : "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}[^.]+$"
+          },
+          "$.body.password.lastChangedDate" : {
+            "match" : "regex",
+            "regex" : "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}[^.]+$"
+          },
+          "$.body.sub" : {
+            "match" : "regex",
+            "regex" : "^([a-zA-Z0-9-]+)$"
+          },
+          "$.body.password.status" : {
+            "match" : "regex",
+            "regex" : "^([a-zA-Z0-9-]+)$"
+          },
+          "$.body.password.lastReset.source" : {
+            "match" : "regex",
+            "regex" : "^([a-zA-Z0-9-]+)$"
+          },
+          "$.body.password.authType" : {
+            "match" : "regex",
+            "regex" : "^([a-zA-Z0-9-]+)$"
+          }
+        }
+      }
+    },
+    {
+      "description" : "Get authentication information by credId",
+      "request" : {
+        "method" : "GET",
+        "path" : "/bas-proxy/credentials/cred-id-1234/authentications",
+        "headers" : {
+          "Content-Type" : "application/json"
+        },
+        "body" : {
+          "successfulAuthentications" : [
+          ],
+          "unsuccessfulAuthentications" : [
+          ]
+        },
+        "matchingRules" : {
+          "$.body.successfulAuthentications" : {
+            "match" : "regex",
+            "regex" : "^([a-zA-Z0-9-]+)$"
+          },
+          "$.body.unsuccessfulAuthentications" : {
+            "match" : "regex",
+            "regex" : "^([a-zA-Z0-9-]+)$"
+          }
+        }
+      },
+      "response" : {
+        "status" : 200,
+        "body" : {
+          "successfulAuthentications" : [
+          ],
+          "unsuccessfulAuthentications" : [
+          ]
+        },
+        "matchingRules" : {
+          "$.body.successfulAuthentications" : {
+            "match" : "regex",
+            "regex" : "^([a-zA-Z0-9-]+)$"
+          },
+          "$.body.unsuccessfulAuthentications" : {
+            "match" : "regex",
+            "regex" : "^([a-zA-Z0-9-]+)$"
+          }
+        }
+      }
+    },
+    {
+      "description" : "Get user by groupId",
+      "request" : {
+        "method" : "GET",
+        "path" : "/bas-proxy/groups/9F9416A1-3977-4FC1-AB5E-0352417FD5B7",
+        "headers" : {
+          "Content-Type" : "application/json"
+        },
+        "matchingRules" : {
+          "$.body.bas:groupId" : {
+            "match" : "regex",
+            "regex" : "^([a-zA-Z0-9-]+)$"
+          }
+        }
+      },
+      "response" : {
+        "status" : 200,
+        "body" : {
+          "bas:groupId" : "9F9416A1-3977-4FC1-AB5E-0352417FD5B7",
+          "credentials" : [
+            {
+              "sub" : "cred-id-1234",
+              "name" : "TestName",
+              "bas:roles" : [
+                "Administrator",
+                "User"
+              ],
+              "bas:gg-legacy:description" : "[No description]",
+              "email" : "default@example.com",
+              "email_verified" : true,
+              "bas:transition:credentialCreatedDate" : 1580224358085,
+              "suspended" : false
+            }
+          ]
+        },
+        "matchingRules" : {
+          "$.body.credentials[0].bas:roles[0]" : {
+            "match" : "regex",
+            "regex" : "."
+          },
+          "$.body.bas:groupId" : {
+            "match" : "regex",
+            "regex" : "^([a-zA-Z0-9-]+)$"
+          },
+          "$.body.credentials[0].bas:roles[1]" : {
+            "match" : "regex",
+            "regex" : "."
+          },
+          "$.body.credentials[0].email_verified" : {
+            "match" : "regex",
+            "regex" : "true|false"
+          },
+          "$.body.credentials[0].sub" : {
+            "match" : "regex",
+            "regex" : "."
+          },
+          "$.body.credentials[0].name" : {
+            "match" : "regex",
+            "regex" : "."
+          },
+          "$.body.credentials[0].bas:gg-legacy:description" : {
+            "match" : "regex",
+            "regex" : "."
+          },
+          "$.body.credentials[0].email" : {
+            "match" : "regex",
+            "regex" : "(?=[^\\s]+)(?=(\\w+)@([\\w\\.]+))"
+          },
+          "$.body.credentials" : {
+            "match" : "regex",
+            "regex" : "."
+          },
+          "$.body.credentials[0].bas:transition:credentialCreatedDate" : {
+            "match" : "regex",
+            "regex" : "."
+          }
+        }
+      }
+    }
+  ],
+  "metadata" : {
+    "pactSpecification" : {
+      "version" : "2.0.0"
+    },
+    "scala-pact" : {
+      "version" : "2.4.0"
+    }
+  }
+}

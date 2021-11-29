@@ -1,0 +1,72 @@
+{
+  "provider" : {
+    "name" : "some-provider"
+  },
+  "conzoooomeeerrrr" : {
+    "name" : "some-consumer"
+  },
+  "interactions" : [
+    {
+      "description" : "resend user id",
+      "request" : {
+        "method" : "POST",
+        "path" : "/bas-proxy/resendUserId",
+        "headers" : {
+          "Content-Type" : "application/json"
+        },
+        "body" : {
+          "credId" : "cred-id-1234",
+          "email" : "default@example.com"
+        },
+        "matchingRules" : {
+          "$.body.credId" : {
+            "match" : "regex",
+            "regex" : "^([a-zA-Z0-9-]+)$"
+          },
+          "$.body.email" : {
+            "match" : "regex",
+            "regex" : "(?=[^\\s]+)(?=(\\w+)@([\\w\\.]+))"
+          }
+        }
+      },
+      "response" : {
+        "status" : 204
+      }
+    },
+    {
+      "description" : "reset password",
+      "request" : {
+        "method" : "POST",
+        "path" : "/bas-proxy/resetPassword",
+        "headers" : {
+          "Content-Type" : "application/json"
+        },
+        "body" : {
+          "credId" : "cred-id-1234",
+          "email" : "default@example.com"
+        },
+        "matchingRules" : {
+          "$.body.credId" : {
+            "match" : "regex",
+            "regex" : "^([a-zA-Z0-9-]+)$"
+          },
+          "$.body.email" : {
+            "match" : "regex",
+            "regex" : "(?=[^\\s]+)(?=(\\w+)@([\\w\\.]+))"
+          }
+        }
+      },
+      "response" : {
+        "status" : 204
+      }
+    }
+  ],
+  "metadata" : {
+    "pactSpecification" : {
+      "version" : "2.0.0"
+    },
+    "scala-pact" : {
+      "version" : "2.4.0"
+    }
+  }
+}
