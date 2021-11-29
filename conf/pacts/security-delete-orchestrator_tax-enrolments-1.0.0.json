@@ -1,0 +1,38 @@
+{
+  "provider" : {
+    "name" : "tax-enrolments"
+  },
+  "consumer" : {
+    "name" : "security-delete-orchestrator"
+  },
+  "interactions" : [
+    {
+      "description" : "cascade deletion of a groupId",
+      "request" : {
+        "method" : "DELETE",
+        "path" : "/tax-enrolments/group-records/90ccf333-65d2-4bf2-a008-01dfca702161"
+      },
+      "response" : {
+        "status" : 204
+      }
+    },
+    {
+      "description" : "cascade deletion of a credId",
+      "request" : {
+        "method" : "DELETE",
+        "path" : "/tax-enrolments/credential-records/credId90ccf333"
+      },
+      "response" : {
+        "status" : 204
+      }
+    }
+  ],
+  "metadata" : {
+    "pactSpecification" : {
+      "version" : "2.0.0"
+    },
+    "scala-pact" : {
+      "version" : "2.4.0"
+    }
+  }
+}

@@ -19,7 +19,7 @@ package controllers
 import javax.inject.{Inject, Singleton}
 import models.{Pact, PactWithVersion}
 import play.api.libs.json.{JsValue, Json}
-import play.api.mvc.{Action, AnyContent, ControllerComponents, Result}
+import play.api.mvc.{Action, AnyContent, ControllerComponents}
 import repositories.PactBrokerRepository
 import services.PactService
 import uk.gov.hmrc.play.bootstrap.backend.controller.BackendBaseController
@@ -35,21 +35,12 @@ class ConsumerController @Inject()(override val controllerComponents:ControllerC
       errors => Future.successful(BadRequest(errors.mkString)),
       { pactBody =>
 
-        val pact: PactWithVersion = new PactWithVersion(pactBody.provider, pactBody.consumer, version, pactBody.interactions)
+        val pactWithVersion: PactWithVersion = new PactWithVersion(pactBody.provider, pactBody.consumer, version, pactBody.interactions)
 
-        def insertPact(pact: PactWithVersion): Future[Result] =
-          repo.add(pact).map {
-            case result if result.ok => Ok
-            case result => InternalServerError(result.writeErrors.mkString)
-          }
-
-        for {
-          exists <- repo.find(consumerId, producerId, version)
-          result <- exists match {
-            case Some(res) if res.interactions == pact.interactions => Future.successful(Ok)
-            case _ => insertPact(pact)
-          }
-        } yield result
+        pactService.addPactTest(producerId, consumerId, pactWithVersion).map{
+          case Right(_) => Ok
+          case Left(errorString) => InternalServerError(errorString)
+        }
       }
     )
   }
@@ -58,7 +49,7 @@ class ConsumerController @Inject()(override val controllerComponents:ControllerC
     if (!version.matches("([0-9]+[.][0-9]+[.][0-9]+)")) Future.successful(BadRequest("incorrect version format"))
     else {
       for {
-        exists <- repo.find(consumerId, producerId, version)
+        exists <- pactService.getVersionedPact(producerId, consumerId, version)
         result <- exists match {
           case None => Future.successful(NotFound(s"no pact found for version: $version between producer: $producerId to consumer: $consumerId"))
           case Some(pact) => Future.successful(Ok(Json.toJson(pactService.makePact(pact))))
@@ -68,14 +59,10 @@ class ConsumerController @Inject()(override val controllerComponents:ControllerC
   }
 
   def getLatestPact(producerId: String, consumerId: String): Action[AnyContent] = Action.async {
-    for {
-      packList <- repo.find(consumerId, producerId)
-      opwv = pactService.getMostRecent(packList)
-      result <- opwv match {
-        case None => Future.successful(NotFound)
-        case Some(pwv) => Future.successful(Ok(Json.toJson(pactService.makePact(pwv))))
-      }
-    } yield result
+    pactService.getMostRecent(producerId, consumerId).map {
+      case None => NotFound
+      case Some(pwv) => Ok(Json.toJson(pactService.makePact(pwv)))
+    }
   }
 
   def deletePact(producerId: String, consumerId: String, version: String) :Action[AnyContent] = Action.async {

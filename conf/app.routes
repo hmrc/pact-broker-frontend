@@ -1,7 +1,6 @@
 # microservice specific routes
 
 GET        /assets/*file                                @controllers.Assets.versioned(path="/public", file: Asset)
-
 PUT        /pacts/provider/:producerId/consumer/:consumerId/version/:version      @controllers.ConsumerController.addPactTest(producerId, consumerId, version)
 GET        /pacts/provider/:producerId/consumer/:consumerId/latest                @controllers.ConsumerController.getLatestPact(producerId, consumerId)
 GET        /pacts/provider/:producerId/consumer/:consumerId/version/:version      @controllers.ConsumerController.getVersionedPact(producerId, consumerId,version)

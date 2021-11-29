@@ -1,0 +1,28 @@
+{
+  "provider" : {
+    "name" : "identity-verification"
+  },
+  "consumer" : {
+    "name" : "security-delete-orchestrator"
+  },
+  "interactions" : [
+    {
+      "description" : "cascade deletion of a credId",
+      "request" : {
+        "method" : "DELETE",
+        "path" : "/identity-verification/credential-records/credId90ccf333"
+      },
+      "response" : {
+        "status" : 204
+      }
+    }
+  ],
+  "metadata" : {
+    "pactSpecification" : {
+      "version" : "2.0.0"
+    },
+    "scala-pact" : {
+      "version" : "2.4.0"
+    }
+  }
+}

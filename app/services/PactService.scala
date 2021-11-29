@@ -17,20 +17,59 @@
 package services
 
 import models.{Pact, PactWithVersion}
+import play.api.Logging
+import repositories.PactBrokerRepository
 
-class PactService {
+import javax.inject.Inject
+import scala.concurrent.{ExecutionContext, Future}
+
+class PactService @Inject()(repo: PactBrokerRepository) extends Logging {
 
   def makePact(inputPact: PactWithVersion): Pact = {
     new Pact(inputPact.provider, inputPact.consumer, inputPact.interactions)
   }
 
-  def getMostRecent(pactList: List[PactWithVersion]): Option[PactWithVersion] = {
-    pactList.length match {
-      case 0 => None
-      case 1 => Some(pactList.head)
-      case _ => Some(pactList.reduceLeft[PactWithVersion]((x, y) => findMostRecentOutOfTwo(x, y)))
+
+  def addPactTest(producerId: String, consumerId: String, pactWithVersion:PactWithVersion)(implicit ec: ExecutionContext):Future[Either[String,Boolean]] = {
+    for {
+      exists <- repo.find(consumerId, producerId, pactWithVersion.version)
+      result <- exists match {
+        case Some(res) if res.interactions == pactWithVersion.interactions => {
+          logger.info(s"[GG-5850] addPactTest: Identical PACT Found ${res.provider.name}/${res.consumer.name}/${res.version}")
+          Future.successful(Right(true))
+        }
+        case _ => repo.add(pactWithVersion).map {
+          case result if result.ok => {
+            logger.info(s"[GG-5850] addPactTest: PACT Added ${pactWithVersion.provider.name}/${pactWithVersion.consumer.name}/${pactWithVersion.version}")
+            Right(true)
+          }
+          case result => {
+            val error = result.writeErrors.head.errmsg
+            logger.error(s"[GG-5850] addPactTest: Error adding PACT ${pactWithVersion.provider.name}/${pactWithVersion.consumer.name}/${pactWithVersion.version}: ${error}")
+            Left(error)
+          }
+        }
+      }
+    } yield result
+  }
+
+
+  def getVersionedPact(producerId: String, consumerId: String, version: String):Future[Option[PactWithVersion]] = {
+    repo.find(consumerId, producerId, version)
+  }
+
+  def getMostRecent(producerId: String, consumerId: String)(implicit ec:ExecutionContext): Future[Option[PactWithVersion]] = {
+    for {
+      pactList <- repo.find(consumerId, producerId)
+    } yield {
+      pactList.length match {
+        case 0 => None
+        case 1 => Some(pactList.head)
+        case _ => Some(pactList.reduceLeft[PactWithVersion]((x, y) => findMostRecentOutOfTwo(x, y)))
+      }
     }
   }
+
 
   private def findMostRecentOutOfTwo(pactWithVersion1: PactWithVersion, pactWithVersion2: PactWithVersion): PactWithVersion = {
     val pact1Version: Array[Int] = pactWithVersion1.version.split("\\.").map(a => a.toInt)

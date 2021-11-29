@@ -16,7 +16,7 @@
 
 package controllers
 
-import play.api.http.Status.{CONFLICT, INTERNAL_SERVER_ERROR, NOT_FOUND, OK}
+import play.api.http.Status.{INTERNAL_SERVER_ERROR, NOT_FOUND, OK}
 import play.api.libs.json.Json
 import support.PactBrokerScISpec
 
@@ -103,7 +103,8 @@ class ConsumerControllerISpec extends PactBrokerScISpec {
       "a pact in the database matches the provider, consumer and version " in {
         withClient {
           wsClient => {
-            await(wsClient.url(resource(putUrl())).addHttpHeaders(contentAsJson).put(Json.toJson(pact)))
+            val putResult = await(wsClient.url(resource(putUrl())).addHttpHeaders(contentAsJson).put(Json.toJson(pact)))
+            putResult.status shouldBe OK
             val result = await(wsClient.url(resource(getUrl())).addHttpHeaders(contentAsJson).get())
             result.status shouldBe OK
             val deleteResult = await(wsClient.url(resource(deleteUrl())).addHttpHeaders(contentAsJson).delete())
@@ -181,7 +182,8 @@ class ConsumerControllerISpec extends PactBrokerScISpec {
       "deleting a pact from the database" in {
         withClient {
           wsClient => {
-            await(wsClient.url(resource(putUrl())).addHttpHeaders(contentAsJson).put(Json.toJson(pact)))
+            val putResult = await(wsClient.url(resource(putUrl())).addHttpHeaders(contentAsJson).put(Json.toJson(pact)))
+            putResult.status shouldBe OK
             val result = await(wsClient.url(resource(getUrl())).addHttpHeaders(contentAsJson).get())
             result.status shouldBe OK
             val deleteResult = await(wsClient.url(resource(deleteUrl())).addHttpHeaders(contentAsJson).delete())
