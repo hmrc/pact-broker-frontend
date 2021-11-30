@@ -25,6 +25,7 @@ import javax.inject.{Inject, Singleton}
 class PactBrokerConfig @Inject()(config: Configuration) extends Logging {
   lazy val pactFilesFolder:File = {
     val folder = new File(config.get[String]("pactFilesLoader.folder"))
+    logger.info(s"pactFilesLoader.folder : ${folder.getAbsolutePath}")
     require(folder.isDirectory)
     folder
   }
