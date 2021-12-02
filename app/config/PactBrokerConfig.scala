@@ -17,18 +17,10 @@
 package config
 
 import play.api.{Configuration, Logging}
-
-import java.io.File
 import javax.inject.{Inject, Singleton}
 
 @Singleton
 class PactBrokerConfig @Inject()(config: Configuration) extends Logging {
-  lazy val pactFilesFolder:File = {
-    val folder = new File(config.get[String]("pactFilesLoader.folder"))
-    logger.info(s"[GG-5850] pactFilesLoader.folder : ${folder.getAbsolutePath}")
-    require(folder.isDirectory)
-    folder
-  }
 
   lazy val pactFilesLoaderEnabled: Boolean = config.get[Boolean]("pactFilesLoader.enabled")
 }

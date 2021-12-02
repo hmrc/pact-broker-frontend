@@ -24,8 +24,6 @@ import org.scalatestplus.play.guice.GuiceOneAppPerSuite
 import play.api.libs.json.JsArray
 import play.api.mvc.Results
 
-import java.io.File
-
 class PactJsonLoaderSpec extends UnitSpec with MockitoSugar with GuiceOneAppPerSuite with Results {
 
   trait SetUp {
@@ -33,27 +31,19 @@ class PactJsonLoaderSpec extends UnitSpec with MockitoSugar with GuiceOneAppPerS
     val pactJsonLoader: PactJsonLoader = new PactJsonLoader(mockConfig)
   }
 
-  "loadPacts" should {
 
-    "correctly load and parse all pact files in the conf/pacts folder used at startup" in new SetUp {
-      when(mockConfig.pactFilesFolder).thenReturn(new File("conf/pacts"))
-      val results = pactJsonLoader.loadPacts()
-      results.filter(_.isRight).size should be > 0
-      results.filter(_.isLeft) shouldBe empty
-    }
-
-    "load pacts in test/pacts folder, rejecting/accepting as appropriate" in new SetUp {
-
-      when(mockConfig.pactFilesFolder).thenReturn(new File("test/pacts"))
-
+  "loadPactsFromClasspath" should {
+    "load pacts, rejecting/accepting as appropriate" in new SetUp {
       val results = pactJsonLoader.loadPacts()
       type ResultLists = Tuple2[List[String] , List[PactWithVersion]]
-      val (errors, pacts) = results.foldLeft[ResultLists](List[String]() -> List[PactWithVersion]()) { (resultLists:ResultLists, result:Either[String, PactWithVersion]) =>
-        result match {
-          case Left(error) => (resultLists._1:+error) -> resultLists._2
+      val (errors, pacts) = results.foldLeft[ResultLists](List[String]() -> List[PactWithVersion]()) {
+        (resultLists:ResultLists, result:Either[String, PactWithVersion]) => result match {
+          case Left(error) => (resultLists._1 :+ error) -> resultLists._2
           case Right(pactWithVersion) => resultLists._1 -> (resultLists._2:+pactWithVersion.copy(interactions = new JsArray()))
         }
       }
+
+      pacts should contain(PactWithVersion(provider=MDTPService("some-provider-in-jar"), consumer=MDTPService("some-consumer-in-jar"), version="1.2.0", interactions=new JsArray()))
       pacts should contain(PactWithVersion(provider=MDTPService("some-provider"), consumer=MDTPService("some-consumer"), version="1.0.0", interactions=new JsArray()))
       pacts should contain(PactWithVersion(provider=MDTPService("some-provider"), consumer=MDTPService("some-consumer"), version="1.1.0", interactions=new JsArray()))
       errors should contain("PACT JSON filename with missing/invalid version suffix - valid-pact-file-with-no-version-suffix.json")
