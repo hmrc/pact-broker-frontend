@@ -2,19 +2,26 @@
 # pact-broker-frontend
 
 ##Pact Broker
-A pact broker allows consumer services to store pacts in a central location and then provide services to verify against these versioned, centrally located pacts. This prevents the teams responsible for the consuming services having to send updated pacts to the provider services teams to update their projects or raising pull requests against the services.
+A pact broker allows many consumers of a provider service to store pacts (json describing a consumer request and expected provider response) in a central location.
+A producer can then read these pacts to verify its responses match consumers expectations.
+
+This prevents the teams responsible for the consumer services having to send updated pacts to the provider services teams to update their projects or raising pull requests against the services.
 
 ##Sbt with pact broker
-A service that wishes to utilise the **`sbt pactPush`**  commandwill require a file called pact.sbt that contains  **`pact broker host environment`** variables: 
+Consuming services can generate pact files and push them to the pact broker server with the **`sbt pactPush`** command.
+
+A service that wishes to utilise the **`sbt pactPush`**  command will require a file called pact.sbt that contains  **`pact broker host environment`** variables: 
 * pactBrokerAddress
 * allowSnapshotPublish
 * pactContractVersion 
 
+For an example of how to generate pacts, configure pact.sbt and push pacts to the broker see [auth-team-contract-tests-maker](https://github.com/hmrc/auth-team-contract-tests-maker)
 
-For an example of how to set up the variables, generate pacts and push using sbt see auth-contract-tests
+##Pre-loaded pacts
+Pact json files in this projects conf/pacts folder (with a valid version suffix in the filename) will be automatically stored in the database when the service starts up.
 
 ## How to build
-uses defualt JVM settings.
+uses default JVM settings.
 - ```mongoDB```  must be running
 - ```smserver``` needs to be running for it:test
 

@@ -37,7 +37,7 @@ class PactJsonFilesModuleSpec extends UnitSpec with MockitoSugar with GuiceOneAp
       val executor = new PactJsonFilesExecutor(mongoLocks, pactFilesLoader, pactConfig, pactService)
 
       val result = await(executor.execute())
-      result.errorCount shouldBe 0
+      result.errorCount shouldBe 3
       result.successCount should be > 0
     }
   }

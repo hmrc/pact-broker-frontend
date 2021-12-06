@@ -1,4 +1,5 @@
 import play.sbt.PlayImport.PlayKeys.playDefaultPort
+import sbt.Keys.unmanagedResourceDirectories
 import uk.gov.hmrc.DefaultBuildSettings.integrationTestSettings
 import uk.gov.hmrc.ServiceManagerPlugin.Keys.itDependenciesList
 import uk.gov.hmrc.ServiceManagerPlugin.serviceManagerSettings
@@ -15,8 +16,11 @@ lazy val root = Project(appName, file("."))
   .enablePlugins(play.sbt.PlayScala, SbtDistributablesPlugin)
   .settings(
     majorVersion                     := 0,
-    libraryDependencies              ++= AppDependencies.compile ++ AppDependencies.test
+    libraryDependencies              ++= AppDependencies.compile ++ AppDependencies.test,
+    unmanagedResourceDirectories in Test += (baseDirectory in Test).value / "test-resources",
+    unmanagedJars in Test += (baseDirectory in Test).value / "test-resources" / "pacts" / "pact-file.jar"
   )
+
   .settings(scalaVersion := "2.12.15")
   .settings(playDefaultPort := 9866)
   .settings(publishingSettings: _*)
