@@ -7,7 +7,7 @@ object AppDependencies {
     play.sbt.PlayImport.ws,
     "uk.gov.hmrc"       %% "simple-reactivemongo"           % "8.0.0-play-28",
     "uk.gov.hmrc"       %% "logback-json-logger"            % "5.1.0",
-    "uk.gov.hmrc"       %% "bootstrap-backend-play-28"      % "5.16.0",
+    "uk.gov.hmrc"       %% "bootstrap-backend-play-28"      % "5.24.0",
     "uk.gov.hmrc"       %% "mongo-lock"                   % "7.0.0-play-28",
   )
 
@@ -18,7 +18,7 @@ object AppDependencies {
     "com.vladsch.flexmark"        % "flexmark-all"              % "0.36.8",
     "org.jsoup"                   %  "jsoup"                    % "1.13.1"                  % "test, it",
     "org.mockito"                 %% "mockito-scala-scalatest"  % "1.16.37"                % "test, it",
-    "uk.gov.hmrc"                 %% "service-integration-test" % "1.2.0-play-28"          % "test, it"
+    "uk.gov.hmrc"                 %% "service-integration-test" % "1.3.0-play-28"          % "test, it"
   )
 
 
