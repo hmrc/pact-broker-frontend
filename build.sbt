@@ -17,11 +17,11 @@ lazy val root = Project(appName, file("."))
   .settings(
     majorVersion                     := 0,
     libraryDependencies              ++= AppDependencies.compile ++ AppDependencies.test,
-    unmanagedResourceDirectories in Test += (baseDirectory in Test).value / "test-resources",
-    unmanagedJars in Test += (baseDirectory in Test).value / "test-resources" / "pacts" / "pact-file.jar"
+    Test / unmanagedResourceDirectories += (Test / baseDirectory).value / "test-resources",
+    Test / unmanagedJars += (Test / baseDirectory).value / "test-resources" / "pacts" / "pact-file.jar"
   )
 
-  .settings(scalaVersion := "2.12.15")
+  .settings(scalaVersion := "2.12.16")
   .settings(playDefaultPort := 9866)
   .settings(publishingSettings: _*)
   .settings(ScoverageSettings())
