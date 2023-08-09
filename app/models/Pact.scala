@@ -21,6 +21,6 @@ import play.api.libs.json.{JsArray, Json, OWrites, Reads}
 case class Pact(provider: MDTPService, consumer: MDTPService, interactions: JsArray)
 
 object Pact {
-  implicit val reads: Reads[Pact] = Json.reads[Pact]
+  implicit val reads:  Reads[Pact] = Json.reads[Pact]
   implicit val writes: OWrites[Pact] = Json.writes[Pact]
 }

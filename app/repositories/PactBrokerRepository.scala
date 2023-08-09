@@ -28,45 +28,45 @@ import uk.gov.hmrc.mongo.ReactiveRepository
 
 import scala.concurrent.{ExecutionContext, Future}
 
+class PactBrokerRepository @Inject() ()(implicit mongo: ReactiveMongoComponent, ec: ExecutionContext)
+    extends ReactiveRepository[PactWithVersion, BSONObjectID]("pacts", mongo.mongoConnector.db, PactBrokerFormats.pactBrokerFormat) {
 
-class PactBrokerRepository @Inject() () (implicit mongo: ReactiveMongoComponent, ec: ExecutionContext)
-  extends ReactiveRepository[PactWithVersion, BSONObjectID]("pacts", mongo.mongoConnector.db,PactBrokerFormats.pactBrokerFormat) {
-
-  def add(pact: PactWithVersion):Future[WriteResult] = {
+  def add(pact: PactWithVersion): Future[WriteResult] = {
     collection.insert.one(pact)
   }
 
-  def find(consumerId: String, providerId: String, version:String):Future[Option[PactWithVersion]] = {
-    val criteria = Json.obj("consumer" -> Json.obj("name" -> consumerId),
-      "provider" -> Json.obj("name" -> providerId),
-      "version" -> version)
+  def find(consumerId: String, providerId: String, version: String): Future[Option[PactWithVersion]] = {
+    val criteria = Json.obj("consumer" -> Json.obj("name" -> consumerId), "provider" -> Json.obj("name" -> providerId), "version" -> version)
 
-    collection.find(criteria,None).one[PactWithVersion]
+    collection.find(criteria, None).one[PactWithVersion]
   }
 
-  def find(consumerId: String, providerId: String):Future[List[PactWithVersion]] = {
-    val criteria = Json.obj("consumer" -> Json.obj("name" -> consumerId),
-      "provider" -> Json.obj("name" -> providerId))
+  def find(consumerId: String, providerId: String): Future[List[PactWithVersion]] = {
+    val criteria = Json.obj("consumer" -> Json.obj("name" -> consumerId), "provider" -> Json.obj("name" -> providerId))
 
-    collection.find(criteria,None)
+    collection
+      .find(criteria, None)
       .cursor[PactWithVersion]()
-      .collect[List](-1,Cursor.FailOnError[List[PactWithVersion]]())
+      .collect[List](-1, Cursor.FailOnError[List[PactWithVersion]]())
   }
 
-  def removePact(providerId: String, consumerId: String, version:String):Future[MultiBulkWriteResult] ={
+  def removePact(providerId: String, consumerId: String, version: String): Future[MultiBulkWriteResult] = {
     val deleteBuilder = collection.delete(ordered = false)
 
-    val deletes = Future.sequence(Seq(
-      deleteBuilder.element(
-        q = Json.obj("consumer" -> Json.obj("name" -> consumerId),
-          "provider" -> Json.obj("name" -> providerId),
-          "version" -> version),
-        limit = Some(1),
-        collation = None)))
+    val deletes = Future.sequence(
+      Seq(
+        deleteBuilder.element(
+          q         = Json.obj("consumer" -> Json.obj("name" -> consumerId), "provider" -> Json.obj("name" -> providerId), "version" -> version),
+          limit     = Some(1),
+          collation = None
+        )
+      )
+    )
 
-    deletes.flatMap { ops => deleteBuilder.many(ops) }  }
+    deletes.flatMap(ops => deleteBuilder.many(ops))
+  }
 }
 
 object PactBrokerFormats {
-  implicit val pactBrokerFormat : Format[PactWithVersion] = Json.format[PactWithVersion]
+  implicit val pactBrokerFormat: Format[PactWithVersion] = Json.format[PactWithVersion]
 }

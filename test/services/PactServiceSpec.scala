@@ -38,15 +38,16 @@ class PactServiceSpec extends UnitSpec with MockitoSugar with GuiceOneAppPerSuit
     val consumer = "Consumer"
     val version = "1.3.0"
     val pactWithVersion = new PactWithVersion(new MDTPService(provider), new MDTPService(consumer), "1.3.0", Json.arr("interactions", "abc"))
-    val pactWithDifferentInteractions = new PactWithVersion(new MDTPService(provider), new MDTPService(consumer), "1.3.0", Json.arr("interactions", "different"))
+    val pactWithDifferentInteractions =
+      new PactWithVersion(new MDTPService(provider), new MDTPService(consumer), "1.3.0", Json.arr("interactions", "different"))
     val pactWithOlderVersion = new PactWithVersion(new MDTPService(provider), new MDTPService(consumer), "1.0.0", Json.arr("interactions", "def"))
     val pact = new Pact(new MDTPService(provider), new MDTPService(consumer), Json.arr("interactions", "abc"))
 
     val successWriteResult: DefaultWriteResult = DefaultWriteResult(ok = true, n = 1, writeErrors = Seq(), None, None, Some("successWriteResult"))
-    val errorWriteResult: DefaultWriteResult = DefaultWriteResult(ok = false, n = 1, writeErrors = Seq(WriteError(1, 1, "Error")), None, None, Some("errorWriteResult"))
+    val errorWriteResult: DefaultWriteResult =
+      DefaultWriteResult(ok = false, n = 1, writeErrors = Seq(WriteError(1, 1, "Error")), None, None, Some("errorWriteResult"))
 
   }
-
 
   "makePact" should {
     "create a pact when given a pactWithVersion" in new SetUp {

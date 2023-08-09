@@ -21,15 +21,15 @@ import play.api.libs.json.{JsArray, Json, OWrites, Reads}
 import scala.util.matching.Regex
 
 case class PactWithVersion(provider: MDTPService, consumer: MDTPService, version: String, interactions: JsArray) {
-  require(PactWithVersion.isValid(version),s"version $version is invalid")
+  require(PactWithVersion.isValid(version), s"version $version is invalid")
 }
 
 object PactWithVersion {
-  implicit val reads: Reads[PactWithVersion] = Json.reads[PactWithVersion]
+  implicit val reads:  Reads[PactWithVersion] = Json.reads[PactWithVersion]
   implicit val writes: OWrites[PactWithVersion] = Json.writes[PactWithVersion]
-  val versionRegex: Regex = "([0-9]+[.][0-9]+[.][0-9]+)".r
-  def isValid(version:String): Boolean = version match {
+  val versionRegex:    Regex = "([0-9]+[.][0-9]+[.][0-9]+)".r
+  def isValid(version: String): Boolean = version match {
     case versionRegex(_) => true
-    case _ => false
+    case _               => false
   }
 }

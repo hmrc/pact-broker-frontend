@@ -25,21 +25,21 @@ import uk.gov.hmrc.lock.{LockKeeper, LockMongoRepository, LockRepository}
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
+class MongoLock(db: () => DB, lockId_ : String) extends LockKeeper with Logging {
 
-class MongoLock(db: () => DB, lockId_ : String) extends LockKeeper with Logging{
-
-  override val forceLockReleaseAfter:Duration = Duration.standardMinutes(5)
+  override val forceLockReleaseAfter: Duration = Duration.standardMinutes(5)
 
   override def repo: LockRepository = LockMongoRepository(db)
 
   override def lockId: String = lockId_
 
-  override def tryLock[T](body: => Future[T])(implicit ec : ExecutionContext): Future[Option[T]] = {
+  override def tryLock[T](body: => Future[T])(implicit ec: ExecutionContext): Future[Option[T]] = {
     tryLockWithMaxDuration(body, forceLockReleaseAfter)
   }
 
-  def tryLockWithMaxDuration[T](body: => Future[T], releaseLockAfter:Duration)(implicit ec : ExecutionContext): Future[Option[T]] = {
-    repo.lock(lockId, serverId, releaseLockAfter)
+  def tryLockWithMaxDuration[T](body: => Future[T], releaseLockAfter: Duration)(implicit ec: ExecutionContext): Future[Option[T]] = {
+    repo
+      .lock(lockId, serverId, releaseLockAfter)
       .flatMap { acquired =>
         if (acquired) {
           logger.info(s"Mongo lock acquired with id $lockId_.")
@@ -47,21 +47,20 @@ class MongoLock(db: () => DB, lockId_ : String) extends LockKeeper with Logging{
             logger.info(s"Process requiring mongo lock with id $lockId_ completed, releasing lock.")
             repo.releaseLock(lockId, serverId).map(_ => Some(x))
           }
-        }
-        else {
+        } else {
           logger.info(s"Mongo lock with id $lockId_ could not be acquired.")
           Future.successful(None)
         }
-      }.recoverWith { case ex =>
+      }
+      .recoverWith { case ex =>
         logger.error(s"Process requiring mongo lock with id $lockId_ failed: ${ex.getMessage}, releasing lock.", ex)
         repo.releaseLock(lockId, serverId).flatMap(_ => Future.failed(ex))
       }
   }
 }
 
-
 @Singleton
-class MongoLocks @Inject()(mongo: ReactiveMongoComponent) {
+class MongoLocks @Inject() (mongo: ReactiveMongoComponent) {
   private val db = mongo.mongoConnector.db
   val dbPopulationLock = new MongoLock(db, "db-population-job")
 }

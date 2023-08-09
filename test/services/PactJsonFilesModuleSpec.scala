@@ -24,16 +24,15 @@ import play.api.mvc.Results
 
 import scala.concurrent.ExecutionContext.Implicits.global
 
-
 class PactJsonFilesModuleSpec extends UnitSpec with MockitoSugar with GuiceOneAppPerSuite with Results {
 
   "execute()" should {
     "Read parse and add in pacts from json files in conf/pacts folder" in {
-      val mongoLocks: MongoLocks = app.injector.instanceOf[MongoLocks]
+      val mongoLocks:      MongoLocks = app.injector.instanceOf[MongoLocks]
       val pactFilesLoader: PactJsonLoader = app.injector.instanceOf[PactJsonLoader]
-      val pactConfig:PactBrokerConfig = mock[PactBrokerConfig]
+      val pactConfig:      PactBrokerConfig = mock[PactBrokerConfig]
       when(pactConfig.pactFilesLoaderEnabled).thenReturn(false)
-      val pactService:PactService = app.injector.instanceOf[PactService]
+      val pactService: PactService = app.injector.instanceOf[PactService]
       val executor = new PactJsonFilesExecutor(mongoLocks, pactFilesLoader, pactConfig, pactService)
 
       val result = await(executor.execute())

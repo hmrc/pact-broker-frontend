@@ -27,22 +27,28 @@ import uk.gov.hmrc.play.bootstrap.backend.controller.BackendBaseController
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class ConsumerController @Inject()(override val controllerComponents:ControllerComponents, repo: PactBrokerRepository, pactService: PactService)(implicit ec: ExecutionContext)
-  extends BackendBaseController {
+class ConsumerController @Inject() (
+  override val controllerComponents: ControllerComponents,
+  repo:                              PactBrokerRepository,
+  pactService:                       PactService
+)(implicit ec: ExecutionContext)
+    extends BackendBaseController {
 
   def addPactTest(producerId: String, consumerId: String, version: String): Action[JsValue] = Action.async(parse.json) { implicit request =>
-    request.body.validate[Pact].fold(
-      errors => Future.successful(BadRequest(errors.mkString)),
-      { pactBody =>
+    request.body
+      .validate[Pact]
+      .fold(
+        errors => Future.successful(BadRequest(errors.mkString)),
+        { pactBody =>
 
-        val pactWithVersion: PactWithVersion = new PactWithVersion(pactBody.provider, pactBody.consumer, version, pactBody.interactions)
+          val pactWithVersion: PactWithVersion = new PactWithVersion(pactBody.provider, pactBody.consumer, version, pactBody.interactions)
 
-        pactService.addPactTest(producerId, consumerId, pactWithVersion).map{
-          case Right(_) => Ok
-          case Left(errorString) => InternalServerError(errorString)
+          pactService.addPactTest(producerId, consumerId, pactWithVersion).map {
+            case Right(_)          => Ok
+            case Left(errorString) => InternalServerError(errorString)
+          }
         }
-      }
-    )
+      )
   }
 
   def getVersionedPact(producerId: String, consumerId: String, version: String): Action[AnyContent] = Action.async {
@@ -51,28 +57,29 @@ class ConsumerController @Inject()(override val controllerComponents:ControllerC
       for {
         exists <- pactService.getVersionedPact(producerId, consumerId, version)
         result <- exists match {
-          case None => Future.successful(NotFound(s"no pact found for version: $version between producer: $producerId to consumer: $consumerId"))
-          case Some(pact) => Future.successful(Ok(Json.toJson(pactService.makePact(pact))))
-        }
+                    case None =>
+                      Future.successful(NotFound(s"no pact found for version: $version between producer: $producerId to consumer: $consumerId"))
+                    case Some(pact) => Future.successful(Ok(Json.toJson(pactService.makePact(pact))))
+                  }
       } yield result
     }
   }
 
   def getLatestPact(producerId: String, consumerId: String): Action[AnyContent] = Action.async {
     pactService.getMostRecent(producerId, consumerId).map {
-      case None => NotFound
+      case None      => NotFound
       case Some(pwv) => Ok(Json.toJson(pactService.makePact(pwv)))
     }
   }
 
-  def deletePact(producerId: String, consumerId: String, version: String) :Action[AnyContent] = Action.async {
+  def deletePact(producerId: String, consumerId: String, version: String): Action[AnyContent] = Action.async {
     for {
-      removeResult <- repo.removePact(producerId,consumerId,version)
+      removeResult <- repo.removePact(producerId, consumerId, version)
       result <- if (removeResult.ok) {
-        Future.successful(Ok)
-      } else {
-        Future.successful(NotFound)
-      }
+                  Future.successful(Ok)
+                } else {
+                  Future.successful(NotFound)
+                }
     } yield result
   }
 }
