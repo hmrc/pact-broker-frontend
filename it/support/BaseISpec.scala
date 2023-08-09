@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 HM Revenue & Customs
+ * Copyright 2023 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,9 +30,7 @@ trait BaseISpec extends WordSpecLike with Matchers with ServiceSpec with WsTestC
 
   override def externalServices: Seq[String] = Seq.empty
 
-  override def beforeAll(): Unit = {
-    super.beforeAll()
-  }
+  override def beforeAll(): Unit = {}
   override def afterAll(): Unit = {}
 
   val env: Environment = Environment.simple()
