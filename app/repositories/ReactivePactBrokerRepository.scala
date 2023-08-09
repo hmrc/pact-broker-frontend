@@ -18,7 +18,7 @@ package repositories
 
 import com.google.inject.Inject
 import models.PactWithVersion
-import play.api.libs.json.{Format, Json}
+import play.api.libs.json.Json
 import play.modules.reactivemongo.ReactiveMongoComponent
 import reactivemongo.api.Cursor
 import reactivemongo.api.commands.{MultiBulkWriteResult, WriteResult}
@@ -29,7 +29,7 @@ import uk.gov.hmrc.mongo.ReactiveRepository
 import scala.concurrent.{ExecutionContext, Future}
 
 class ReactivePactBrokerRepository @Inject() ()(implicit mongo: ReactiveMongoComponent, ec: ExecutionContext)
-    extends ReactiveRepository[PactWithVersion, BSONObjectID]("pacts", mongo.mongoConnector.db, PactBrokerFormats.pactBrokerFormat)
+    extends ReactiveRepository[PactWithVersion, BSONObjectID]("pacts", mongo.mongoConnector.db, implicitly)
     with AbstractPactBrokerRepository {
 
   def add(pact: PactWithVersion): Future[WriteResult] = {
@@ -66,8 +66,4 @@ class ReactivePactBrokerRepository @Inject() ()(implicit mongo: ReactiveMongoCom
 
     deletes.flatMap(ops => deleteBuilder.many(ops))
   }
-}
-
-object PactBrokerFormats {
-  implicit val pactBrokerFormat: Format[PactWithVersion] = Json.format[PactWithVersion]
 }
