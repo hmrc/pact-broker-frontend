@@ -25,16 +25,16 @@ import play.api.libs.json.{JsValue, Json}
 import play.api.mvc.{AnyContentAsEmpty, ControllerComponents, Result, Results}
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
-import repositories.PactBrokerRepository
 import services.PactService
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
 class ConsumerControllerSpec extends UnitSpec with MockitoSugar with GuiceOneAppPerSuite with Results {
-
   trait SetUp {
-    val mockPactBrokerRepository: PactBrokerRepository = mock[PactBrokerRepository]
+    import repositories.AbstractPactBrokerRepository
+
+    val mockPactBrokerRepository: AbstractPactBrokerRepository = mock[AbstractPactBrokerRepository]
     val controllerComponents:     ControllerComponents = app.injector.instanceOf[ControllerComponents]
     val mockPactService:          PactService = mock[PactService]
     val consumerController = new ConsumerController(controllerComponents, mockPactBrokerRepository, mockPactService)

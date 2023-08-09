@@ -16,20 +16,20 @@
 
 package controllers
 
-import javax.inject.{Inject, Singleton}
 import models.{Pact, PactWithVersion}
 import play.api.libs.json.{JsValue, Json}
 import play.api.mvc.{Action, AnyContent, ControllerComponents}
-import repositories.PactBrokerRepository
+import repositories.AbstractPactBrokerRepository
 import services.PactService
 import uk.gov.hmrc.play.bootstrap.backend.controller.BackendBaseController
 
+import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
 class ConsumerController @Inject() (
   override val controllerComponents: ControllerComponents,
-  repo:                              PactBrokerRepository,
+  repo:                              AbstractPactBrokerRepository,
   pactService:                       PactService
 )(implicit ec: ExecutionContext)
     extends BackendBaseController {

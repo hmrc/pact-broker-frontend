@@ -16,7 +16,6 @@
 
 package services
 
-import com.google.inject.AbstractModule
 import config.PactBrokerConfig
 import models.PactWithVersion
 import play.api.Logging
@@ -24,12 +23,6 @@ import play.api.Logging
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 import scala.util.Failure
-
-class PactJsonFilesModule extends AbstractModule {
-  override def configure(): Unit = {
-    bind(classOf[PactJsonFilesExecutor]).asEagerSingleton()
-  }
-}
 
 case class PactJsonFilesExecutorResult(errorCount: Int, successCount: Int)
 

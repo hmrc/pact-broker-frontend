@@ -18,21 +18,21 @@ package services
 
 import helpers.UnitSpec
 import models.{MDTPService, Pact, PactWithVersion}
+import org.mockito.ArgumentMatchers.{eq => eqTo}
 import org.mockito.MockitoSugar
 import org.scalatestplus.play.guice.GuiceOneAppPerSuite
 import play.api.libs.json.Json
 import play.api.mvc.Results
-import repositories.PactBrokerRepository
-import org.mockito.ArgumentMatchers.{eq => eqTo}
 import reactivemongo.api.commands.{DefaultWriteResult, WriteError}
 
-import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.Future
 
 class PactServiceSpec extends UnitSpec with MockitoSugar with GuiceOneAppPerSuite with Results {
-
   trait SetUp {
-    val mockRepository = mock[PactBrokerRepository]
+    import repositories.AbstractPactBrokerRepository
+
+    val mockRepository = mock[AbstractPactBrokerRepository]
     val pactService: PactService = new PactService(mockRepository)
     val provider = "Provider"
     val consumer = "Consumer"
@@ -97,7 +97,7 @@ class PactServiceSpec extends UnitSpec with MockitoSugar with GuiceOneAppPerSuit
     "return None if none are found in mongo" in new SetUp {
       when(mockRepository.find(eqTo("consumer"), eqTo("provider"))).thenReturn(Future.successful(List.empty))
       val result: Option[PactWithVersion] = await(pactService.getMostRecent("provider", "consumer"))
-      assert(result isEmpty)
+      assert(result.isEmpty)
     }
     "return the pact if only one is found" in new SetUp {
       when(mockRepository.find(eqTo("consumer"), eqTo("provider"))).thenReturn(Future.successful(List(pactWithVersion)))

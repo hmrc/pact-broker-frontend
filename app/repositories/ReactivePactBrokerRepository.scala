@@ -28,8 +28,9 @@ import uk.gov.hmrc.mongo.ReactiveRepository
 
 import scala.concurrent.{ExecutionContext, Future}
 
-class PactBrokerRepository @Inject() ()(implicit mongo: ReactiveMongoComponent, ec: ExecutionContext)
-    extends ReactiveRepository[PactWithVersion, BSONObjectID]("pacts", mongo.mongoConnector.db, PactBrokerFormats.pactBrokerFormat) {
+class ReactivePactBrokerRepository @Inject() ()(implicit mongo: ReactiveMongoComponent, ec: ExecutionContext)
+    extends ReactiveRepository[PactWithVersion, BSONObjectID]("pacts", mongo.mongoConnector.db, PactBrokerFormats.pactBrokerFormat)
+    with AbstractPactBrokerRepository {
 
   def add(pact: PactWithVersion): Future[WriteResult] = {
     collection.insert.one(pact)
