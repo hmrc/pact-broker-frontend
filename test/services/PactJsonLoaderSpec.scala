@@ -16,7 +16,6 @@
 
 package services
 
-import config.PactBrokerConfig
 import helpers.UnitSpec
 import models.{MDTPService, PactWithVersion}
 import org.mockito.MockitoSugar
@@ -25,16 +24,12 @@ import play.api.libs.json.JsArray
 import play.api.mvc.Results
 
 class PactJsonLoaderSpec extends UnitSpec with MockitoSugar with GuiceOneAppPerSuite with Results {
-
-  trait SetUp {
-    val mockConfig:     PactBrokerConfig = mock[PactBrokerConfig]
-    val pactJsonLoader: PactJsonLoader = new PactJsonLoader(mockConfig)
-  }
+  private val pactJsonLoader = new PactJsonLoader
 
   "loadPactsFromClasspath" should {
-    "load pacts, rejecting/accepting as appropriate" in new SetUp {
+    "load pacts, rejecting/accepting as appropriate" in {
       val results = pactJsonLoader.loadPacts()
-      type ResultLists = Tuple2[List[String], List[PactWithVersion]]
+      type ResultLists = (List[String], List[PactWithVersion])
       val (errors, pacts) = results.foldLeft[ResultLists](List[String]() -> List[PactWithVersion]()) {
         (resultLists: ResultLists, result: Either[String, PactWithVersion]) =>
           result match {
@@ -71,5 +66,4 @@ class PactJsonLoaderSpec extends UnitSpec with MockitoSugar with GuiceOneAppPerS
       errors should contain("PACT JSON error in invalid-pact-file-with-version-1.0.0.json - /consumer - error.path.missing")
     }
   }
-
 }

@@ -16,22 +16,21 @@
 
 package services
 
-import config.PactBrokerConfig
 import models.{Pact, PactWithVersion}
 import play.api.Logging
 import play.api.libs.json.{JsError, JsSuccess, Json}
 
 import java.io.File
 import java.util.regex.Pattern
-import javax.inject.{Inject, Singleton}
-import scala.io.Source
-import scala.util.{Failure, Success, Try}
-import scala.util.matching.Regex
 import java.util.zip.ZipFile
+import javax.inject.{Inject, Singleton}
 import scala.collection.JavaConverters._
+import scala.io.Source
+import scala.util.matching.Regex
+import scala.util.{Failure, Success, Try}
 
 @Singleton
-class PactJsonLoader @Inject() (config: PactBrokerConfig) extends Logging {
+class PactJsonLoader @Inject() extends Logging {
 
   lazy val jsonPactFileNameVersionRegex: Regex = raw".*-([0-9]+\.[0-9]+\.[0-9]+)\.json".r
   lazy val jsonPactsPackageName:         String = "pacts"
@@ -90,8 +89,8 @@ class PactJsonLoader @Inject() (config: PactBrokerConfig) extends Logging {
       (filteredEntries, entries)
     } match {
       case Success((found, total)) if found.nonEmpty =>
-        logger.info(s"[GG-5850] ${found.size}/${total.size} entries matched in ${jarFile.getName}."); found.map(ResourcePath(_))
-      case Success((found, total)) => found.map(ResourcePath(_))
+        logger.info(s"[GG-5850] ${found.size}/${total.size} entries matched in ${jarFile.getName}."); found.map(ResourcePath)
+      case Success((found, total)) => found.map(ResourcePath)
       case Failure(e)              => logger.error(s"[GG-5850] Error reading file: ${jarFile.getName}", e); Seq.empty[ResourcePath]
     }
   }
@@ -138,10 +137,9 @@ class PactJsonLoader @Inject() (config: PactBrokerConfig) extends Logging {
       } yield {
         PactWithVersion(pact.provider, pact.consumer, version, pact.interactions)
       }) match {
-        case Left(errorMessage) => {
+        case Left(errorMessage) =>
           logger.error(errorMessage)
           Left(errorMessage)
-        }
         case Right(pactWithVersion) => Right(pactWithVersion)
       }
       result

@@ -16,24 +16,24 @@
 
 package services
 
-import config.PactBrokerConfig
-import helpers.UnitSpec
-import org.mockito.MockitoSugar
+import org.scalatest.matchers.should
+import org.scalatest.wordspec.AnyWordSpec
 import org.scalatestplus.play.guice.GuiceOneAppPerSuite
-import play.api.mvc.Results
+import play.api.test.{DefaultAwaitTimeout, FutureAwaits}
 
-import scala.concurrent.ExecutionContext.Implicits.global
+class PactJsonFilesExecutorISpec extends AnyWordSpec with should.Matchers with GuiceOneAppPerSuite with FutureAwaits with DefaultAwaitTimeout {
+  import play.api.Application
+  import play.api.inject.guice.GuiceApplicationBuilder
 
-class PactJsonFilesModuleSpec extends UnitSpec with MockitoSugar with GuiceOneAppPerSuite with Results {
+  override lazy val fakeApplication: Application = GuiceApplicationBuilder()
+    .configure("pactFilesLoader.enabled" -> false)
+    .build()
 
   "execute()" should {
     "Read parse and add in pacts from json files in conf/pacts folder" in {
-      val mongoLocks:      MongoLocks = app.injector.instanceOf[MongoLocks]
-      val pactFilesLoader: PactJsonLoader = app.injector.instanceOf[PactJsonLoader]
-      val pactConfig:      PactBrokerConfig = mock[PactBrokerConfig]
-      when(pactConfig.pactFilesLoaderEnabled).thenReturn(false)
-      val pactService: PactService = app.injector.instanceOf[PactService]
-      val executor = new PactJsonFilesExecutor(mongoLocks, pactFilesLoader, pactConfig, pactService)
+      val executor = app.injector.instanceOf[PactJsonFilesExecutor]
+
+      println(s"packFilesLoader.enabled = ${app.configuration.get[Boolean]("pactFilesLoader.enabled")}")
 
       val result = await(executor.execute())
       result.errorCount shouldBe 3
