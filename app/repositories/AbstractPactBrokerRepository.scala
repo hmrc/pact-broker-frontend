@@ -17,16 +17,20 @@
 package repositories
 
 trait AbstractPactBrokerRepository {
+  import AbstractPactBrokerRepository._
   import models.PactWithVersion
-  import reactivemongo.api.commands.{MultiBulkWriteResult, WriteResult}
 
   import scala.concurrent.Future
 
-  def add(pact: PactWithVersion): Future[WriteResult]
+  def add(pact: PactWithVersion): Future[Either[WriteError, Unit]]
 
   def find(consumerId: String, providerId: String, version: String): Future[Option[PactWithVersion]]
 
-  def find(consumerId: String, providerId: String): Future[List[PactWithVersion]]
+  def find(consumerId: String, providerId: String): Future[Seq[PactWithVersion]]
 
-  def removePact(providerId: String, consumerId: String, version: String): Future[MultiBulkWriteResult]
+  def removePact(providerId: String, consumerId: String, version: String): Future[IsSuccess]
+}
+object AbstractPactBrokerRepository {
+  type WriteError = String
+  type IsSuccess = Boolean
 }

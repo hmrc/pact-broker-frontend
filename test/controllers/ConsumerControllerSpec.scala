@@ -20,9 +20,8 @@ import helpers.UnitSpec
 import models.{MDTPService, Pact, PactWithVersion}
 import org.mockito.ArgumentMatchers.{any, eq => eqTo}
 import org.mockito.MockitoSugar
-import org.scalatestplus.play.guice.GuiceOneAppPerSuite
 import play.api.libs.json.{JsValue, Json}
-import play.api.mvc.{AnyContentAsEmpty, ControllerComponents, Result, Results}
+import play.api.mvc.{AnyContentAsEmpty, Result, Results}
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import services.PactService
@@ -30,14 +29,13 @@ import services.PactService
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
-class ConsumerControllerSpec extends UnitSpec with MockitoSugar with GuiceOneAppPerSuite with Results {
+class ConsumerControllerSpec extends UnitSpec with MockitoSugar with Results {
   trait SetUp {
     import repositories.AbstractPactBrokerRepository
 
     val mockPactBrokerRepository: AbstractPactBrokerRepository = mock[AbstractPactBrokerRepository]
-    val controllerComponents:     ControllerComponents = app.injector.instanceOf[ControllerComponents]
     val mockPactService:          PactService = mock[PactService]
-    val consumerController = new ConsumerController(controllerComponents, mockPactBrokerRepository, mockPactService)
+    val consumerController = new ConsumerController(stubControllerComponents(), mockPactBrokerRepository, mockPactService)
 
     val goodPact = new Pact(new MDTPService("Provider"), new MDTPService("Consumer"), Json.arr("interactions", ""))
     val badPact: JsValue = Json.toJson("""{"provider" : {"name" : "Provider"},"consumer" : {"name" : "Consumer"}}""")
@@ -57,7 +55,7 @@ class ConsumerControllerSpec extends UnitSpec with MockitoSugar with GuiceOneApp
     "return OK when pact service successfully added the pact into the database" in new SetUp {
       when {
         mockPactService.addPactTest(eqTo("Producer"), eqTo("consumer"), eqTo(goodPactWithVersion))
-      } thenReturn Future.successful(Right(true))
+      } thenReturn Future.successful(Right(()))
       val result: Future[Result] = consumerController.addPactTest("Producer", "consumer", "1.0.0")(goodRequest)
       status(result) shouldBe OK
     }

@@ -20,17 +20,15 @@ import helpers.UnitSpec
 import models.{MDTPService, Pact, PactWithVersion}
 import org.mockito.ArgumentMatchers.{eq => eqTo}
 import org.mockito.MockitoSugar
-import org.scalatestplus.play.guice.GuiceOneAppPerSuite
 import play.api.libs.json.Json
-import play.api.mvc.Results
-import reactivemongo.api.commands.{DefaultWriteResult, WriteError}
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
-class PactServiceSpec extends UnitSpec with MockitoSugar with GuiceOneAppPerSuite with Results {
+class PactServiceSpec extends UnitSpec with MockitoSugar {
   trait SetUp {
     import repositories.AbstractPactBrokerRepository
+    import AbstractPactBrokerRepository.WriteError
 
     val mockRepository = mock[AbstractPactBrokerRepository]
     val pactService: PactService = new PactService(mockRepository)
@@ -43,10 +41,8 @@ class PactServiceSpec extends UnitSpec with MockitoSugar with GuiceOneAppPerSuit
     val pactWithOlderVersion = new PactWithVersion(new MDTPService(provider), new MDTPService(consumer), "1.0.0", Json.arr("interactions", "def"))
     val pact = new Pact(new MDTPService(provider), new MDTPService(consumer), Json.arr("interactions", "abc"))
 
-    val successWriteResult: DefaultWriteResult = DefaultWriteResult(ok = true, n = 1, writeErrors = Seq(), None, None, Some("successWriteResult"))
-    val errorWriteResult: DefaultWriteResult =
-      DefaultWriteResult(ok = false, n = 1, writeErrors = Seq(WriteError(1, 1, "Error")), None, None, Some("errorWriteResult"))
-
+    protected val successWriteResult: Right[WriteError, Unit] = Future.successful(Right(()))
+    protected val errorWriteResult:   Left[WriteError, Unit] = Future.successful(Left("Error"))
   }
 
   "makePact" should {
@@ -57,29 +53,29 @@ class PactServiceSpec extends UnitSpec with MockitoSugar with GuiceOneAppPerSuit
   }
 
   "addPactTest" should {
-    "will return true when there is no existing pact in the database" in new SetUp {
-      when(mockRepository.find(eqTo(consumer), eqTo(provider), eqTo(version))).thenReturn(Future.successful(None))
-      when(mockRepository.add(eqTo(pactWithVersion))).thenReturn(successWriteResult)
+    "return true when there is no existing pact in the database" in new SetUp {
+      when(mockRepository.find(eqTo(consumer), eqTo(provider), eqTo(version))) thenReturn Future.successful(None)
+      when(mockRepository.add(eqTo(pactWithVersion))) thenReturn successWriteResult
       val result = await(pactService.addPactTest(provider, consumer, pactWithVersion))
-      result shouldBe Right(true)
+      assert(result.isRight)
     }
 
-    "will return true when there is an identical pact in the database" in new SetUp {
+    "return true when there is an identical pact in the database" in new SetUp {
       when(mockRepository.find(eqTo(consumer), eqTo(provider), eqTo(version))).thenReturn(Future.successful(Some(pactWithVersion)))
       val result = await(pactService.addPactTest(provider, consumer, pactWithVersion))
-      result shouldBe Right(true)
+      assert(result.isRight)
     }
 
-    "will return true when a pact has the same provider, consumer and version but has a different body in the database" in new SetUp {
+    "return true when a pact has the same provider, consumer and version but has a different body in the database" in new SetUp {
       when(mockRepository.find(eqTo(consumer), eqTo(provider), eqTo(version))).thenReturn(Future.successful(Some(pactWithDifferentInteractions)))
-      when(mockRepository.add(eqTo(pactWithVersion))).thenReturn(successWriteResult)
+      when(mockRepository.add(eqTo(pactWithVersion))) thenReturn successWriteResult
       val result = await(pactService.addPactTest(provider, consumer, pactWithVersion))
-      result shouldBe Right(true)
+      assert(result.isRight)
     }
 
     "will return errors when there's a problem adding the new pact into mongo" in new SetUp {
       when(mockRepository.find(eqTo(consumer), eqTo(provider), eqTo(version))).thenReturn(Future.successful(Some(pactWithDifferentInteractions)))
-      when(mockRepository.add(eqTo(pactWithVersion))).thenReturn(errorWriteResult)
+      when(mockRepository.add(eqTo(pactWithVersion))) thenReturn errorWriteResult
       val result = await(pactService.addPactTest(provider, consumer, pactWithVersion))
       result shouldBe Left("Error")
     }
@@ -102,12 +98,12 @@ class PactServiceSpec extends UnitSpec with MockitoSugar with GuiceOneAppPerSuit
     "return the pact if only one is found" in new SetUp {
       when(mockRepository.find(eqTo("consumer"), eqTo("provider"))).thenReturn(Future.successful(List(pactWithVersion)))
       val result: Option[PactWithVersion] = await(pactService.getMostRecent("provider", "consumer"))
-      assert(result.contains(pactWithVersion))
+      assert(result contains pactWithVersion)
     }
     "return the most recent pact if there are multiple" in new SetUp {
       when(mockRepository.find(eqTo("consumer"), eqTo("provider"))).thenReturn(Future.successful(List(pactWithVersion, pactWithOlderVersion)))
       val result: Option[PactWithVersion] = await(pactService.getMostRecent("provider", "consumer"))
-      assert(result.contains(pactWithVersion))
+      assert(result contains pactWithVersion)
     }
   }
 }

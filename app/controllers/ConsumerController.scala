@@ -73,13 +73,8 @@ class ConsumerController @Inject() (
   }
 
   def deletePact(producerId: String, consumerId: String, version: String): Action[AnyContent] = Action.async {
-    for {
-      removeResult <- repo.removePact(producerId, consumerId, version)
-      result <- if (removeResult.ok) {
-                  Future.successful(Ok)
-                } else {
-                  Future.successful(NotFound)
-                }
-    } yield result
+    repo.removePact(producerId, consumerId, version) map { isSuccess =>
+      if (isSuccess) Ok else NotFound
+    }
   }
 }

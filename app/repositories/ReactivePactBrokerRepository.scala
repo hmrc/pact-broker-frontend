@@ -21,9 +21,9 @@ import models.PactWithVersion
 import play.api.libs.json.Json
 import play.modules.reactivemongo.ReactiveMongoComponent
 import reactivemongo.api.Cursor
-import reactivemongo.api.commands.{MultiBulkWriteResult, WriteResult}
 import reactivemongo.bson.BSONObjectID
 import reactivemongo.play.json.JsObjectDocumentWriter
+import repositories.AbstractPactBrokerRepository.IsSuccess
 import uk.gov.hmrc.mongo.ReactiveRepository
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -31,9 +31,10 @@ import scala.concurrent.{ExecutionContext, Future}
 class ReactivePactBrokerRepository @Inject() ()(implicit mongo: ReactiveMongoComponent, ec: ExecutionContext)
     extends ReactiveRepository[PactWithVersion, BSONObjectID]("pacts", mongo.mongoConnector.db, implicitly)
     with AbstractPactBrokerRepository {
+  import AbstractPactBrokerRepository.WriteError
 
-  def add(pact: PactWithVersion): Future[WriteResult] = {
-    collection.insert.one(pact)
+  def add(pact: PactWithVersion): Future[Either[WriteError, Unit]] = {
+    collection.insert.one(pact).map(_.writeErrors.headOption.map(_.errmsg).toLeft(()))
   }
 
   def find(consumerId: String, providerId: String, version: String): Future[Option[PactWithVersion]] = {
@@ -51,19 +52,21 @@ class ReactivePactBrokerRepository @Inject() ()(implicit mongo: ReactiveMongoCom
       .collect[List](-1, Cursor.FailOnError[List[PactWithVersion]]())
   }
 
-  def removePact(providerId: String, consumerId: String, version: String): Future[MultiBulkWriteResult] = {
+  def removePact(providerId: String, consumerId: String, version: String): Future[IsSuccess] = {
     val deleteBuilder = collection.delete(ordered = false)
 
-    val deletes = Future.sequence(
-      Seq(
-        deleteBuilder.element(
-          q         = Json.obj("consumer" -> Json.obj("name" -> consumerId), "provider" -> Json.obj("name" -> providerId), "version" -> version),
-          limit     = Some(1),
-          collation = None
-        )
-      )
-    )
-
-    deletes.flatMap(ops => deleteBuilder.many(ops))
+    for {
+      deleteOps <- Future.sequence(
+                     Seq(
+                       deleteBuilder.element(
+                         q =
+                           Json.obj("consumer" -> Json.obj("name" -> consumerId), "provider" -> Json.obj("name" -> providerId), "version" -> version),
+                         limit     = Some(1),
+                         collation = None
+                       )
+                     )
+                   )
+      deleteResult <- deleteBuilder.many(deleteOps)
+    } yield deleteResult.ok
   }
 }

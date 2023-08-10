@@ -29,30 +29,28 @@ class PactService @Inject() (repo: AbstractPactBrokerRepository)(implicit ec: Ex
     new Pact(inputPact.provider, inputPact.consumer, inputPact.interactions)
   }
 
-  def addPactTest(producerId: String, consumerId: String, pactWithVersion: PactWithVersion): Future[Either[String, Boolean]] = {
-    for {
-      exists <- repo.find(consumerId, producerId, pactWithVersion.version)
-      result <- exists match {
-                  case Some(res) if res.interactions == pactWithVersion.interactions =>
-                    logger.info(s"[GG-5850] addPactTest: Identical PACT Found ${res.provider.name}/${res.consumer.name}/${res.version}")
-                    Future.successful(Right(true))
-                  case _ =>
-                    repo.add(pactWithVersion).map {
-                      case result if result.ok =>
+  def addPactTest(producerId: String, consumerId: String, pactWithVersion: PactWithVersion): Future[Either[String, Unit]] = for {
+    optPact <- repo.find(consumerId, producerId, pactWithVersion.version)
+    result <- optPact match {
+                case Some(res) if res.interactions == pactWithVersion.interactions =>
+                  logger.info(s"[GG-5850] addPactTest: Identical PACT Found ${res.provider.name}/${res.consumer.name}/${res.version}")
+                  Future.successful(Right(()))
+                case _ =>
+                  repo.add(pactWithVersion).map { result =>
+                    result.fold(
+                      error =>
+                        logger.error(
+                          s"[GG-5850] addPactTest: Error adding PACT ${pactWithVersion.provider.name}/${pactWithVersion.consumer.name}/${pactWithVersion.version}: $error"
+                        ),
+                      _ =>
                         logger.info(
                           s"[GG-5850] addPactTest: PACT Added ${pactWithVersion.provider.name}/${pactWithVersion.consumer.name}/${pactWithVersion.version}"
                         )
-                        Right(true)
-                      case result =>
-                        val error = result.writeErrors.head.errmsg
-                        logger.error(
-                          s"[GG-5850] addPactTest: Error adding PACT ${pactWithVersion.provider.name}/${pactWithVersion.consumer.name}/${pactWithVersion.version}: $error"
-                        )
-                        Left(error)
-                    }
-                }
-    } yield result
-  }
+                    )
+                    result
+                  }
+              }
+  } yield result
 
   def getVersionedPact(producerId: String, consumerId: String, version: String): Future[Option[PactWithVersion]] = {
     repo.find(consumerId, producerId, version)
