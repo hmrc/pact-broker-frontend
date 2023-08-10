@@ -23,15 +23,14 @@ import play.modules.reactivemongo.ReactiveMongoComponent
 import reactivemongo.api.Cursor
 import reactivemongo.bson.BSONObjectID
 import reactivemongo.play.json.JsObjectDocumentWriter
-import repositories.AbstractPactBrokerRepository.IsSuccess
+import repositories.AbstractPactBrokerRepository._
 import uk.gov.hmrc.mongo.ReactiveRepository
 
 import scala.concurrent.{ExecutionContext, Future}
 
 class ReactivePactBrokerRepository @Inject() ()(implicit mongo: ReactiveMongoComponent, ec: ExecutionContext)
-    extends ReactiveRepository[PactWithVersion, BSONObjectID]("pacts", mongo.mongoConnector.db, implicitly)
+    extends ReactiveRepository[PactWithVersion, BSONObjectID](collectionName, mongo.mongoConnector.db, implicitly)
     with AbstractPactBrokerRepository {
-  import AbstractPactBrokerRepository.WriteError
 
   def add(pact: PactWithVersion): Future[Either[WriteError, Unit]] = {
     collection.insert.one(pact).map(_.writeErrors.headOption.map(_.errmsg).toLeft(()))
@@ -56,16 +55,16 @@ class ReactivePactBrokerRepository @Inject() ()(implicit mongo: ReactiveMongoCom
     val deleteBuilder = collection.delete(ordered = false)
 
     for {
-      deleteOps <- Future.sequence(
-                     Seq(
-                       deleteBuilder.element(
-                         q =
-                           Json.obj("consumer" -> Json.obj("name" -> consumerId), "provider" -> Json.obj("name" -> providerId), "version" -> version),
-                         limit     = Some(1),
-                         collation = None
-                       )
-                     )
-                   )
+      deleteOps <-
+        Future.sequence(
+          Seq(
+            deleteBuilder.element(
+              q         = Json.obj("consumer" -> Json.obj("name" -> consumerId), "provider" -> Json.obj("name" -> providerId), "version" -> version),
+              limit     = Some(1),
+              collation = None
+            )
+          )
+        )
       deleteResult <- deleteBuilder.many(deleteOps)
     } yield deleteResult.ok
   }

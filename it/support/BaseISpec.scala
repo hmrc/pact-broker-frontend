@@ -16,16 +16,14 @@
 
 package support
 
-import org.scalatest.{LoneElement, Matchers, WordSpecLike}
+import org.scalatest.{Matchers, WordSpecLike}
 import play.api.test.WsTestClient
-import play.api.{Configuration, Environment}
 import uk.gov.hmrc.integration.ServiceSpec
-import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
 
 import scala.concurrent.duration._
 import scala.concurrent.{Await, Future}
 
-trait BaseISpec extends WordSpecLike with Matchers with ServiceSpec with WsTestClient with LoneElement {
+trait BaseISpec extends WordSpecLike with Matchers with ServiceSpec with WsTestClient {
 
   override def externalServices: Seq[String] = Seq.empty
 

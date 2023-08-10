@@ -33,4 +33,6 @@ trait AbstractPactBrokerRepository {
 object AbstractPactBrokerRepository {
   type WriteError = String
   type IsSuccess = Boolean
+
+  val collectionName = "pacts"
 }
