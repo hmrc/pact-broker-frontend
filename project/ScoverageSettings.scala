@@ -11,7 +11,6 @@ object ScoverageSettings {
       ".*connectors.*",
       ".*BuildInfo.*",
       ".*javascript.*",
-      ".*repositories.*",
       ".*Routes.*",
       ".*GuiceInjector",
       ".*DateTimeQueryStringBinder.*", // better covered via wiremock/E2E integration tests

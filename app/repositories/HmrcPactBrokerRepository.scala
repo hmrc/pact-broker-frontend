@@ -16,11 +16,11 @@
 
 package repositories
 
-import models.PactWithVersion
-import uk.gov.hmrc.mongo.play.json.PlayMongoRepository
 import com.google.inject.{Inject, Singleton}
-import repositories.AbstractPactBrokerRepository.{IsSuccess, WriteError, collectionName}
+import models.PactWithVersion
+import repositories.AbstractPactBrokerRepository._
 import uk.gov.hmrc.mongo.MongoComponent
+import uk.gov.hmrc.mongo.play.json.PlayMongoRepository
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -31,7 +31,11 @@ class HmrcPactBrokerRepository @Inject() (mongoComponent: MongoComponent)(implic
   import org.mongodb.scala.model.Filters.{and, equal}
 
   def add(pact: PactWithVersion): Future[Either[WriteError, Unit]] =
-    collection.insertOne(pact).toFuture().map(_ => Right(())).recover { case ex => Left(ex.toString) }
+    collection
+      .insertOne(pact)
+      .toFuture()
+      .map(_ => Right(()))
+      .recover { case ex => Left(ex.toString) }
 
   def find(consumerId: String, providerId: String, version: String): Future[Option[PactWithVersion]] =
     collection
@@ -64,5 +68,5 @@ class HmrcPactBrokerRepository @Inject() (mongoComponent: MongoComponent)(implic
         )
       )
       .toFuture()
-      .map(_ == null)
+      .map(_ != null)
 }

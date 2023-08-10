@@ -158,7 +158,7 @@ class ConsumerControllerISpec extends PactBrokerScISpec {
           val result = await(wsClient.url(resource(getUrl())).addHttpHeaders(contentAsJson).get())
           result.status shouldBe NOT_FOUND
           val deleteResult = await(wsClient.url(resource(deleteUrl())).addHttpHeaders(contentAsJson).delete())
-          deleteResult.status shouldBe OK
+          deleteResult.status shouldBe NOT_FOUND
         }
     }
   }

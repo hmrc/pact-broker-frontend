@@ -16,23 +16,25 @@
 
 package support
 
-import org.scalatest.{Matchers, WordSpecLike}
-import play.api.test.WsTestClient
+import org.scalatest.matchers.should
+import org.scalatest.wordspec.AnyWordSpec
+import play.api.http.MimeTypes
+import play.api.test.{DefaultAwaitTimeout, FutureAwaits, WsTestClient}
 import uk.gov.hmrc.integration.ServiceSpec
 
-import scala.concurrent.duration._
-import scala.concurrent.{Await, Future}
-
-trait BaseISpec extends WordSpecLike with Matchers with ServiceSpec with WsTestClient {
-
-  override def externalServices: Seq[String] = Seq.empty
+trait BaseISpec
+    extends AnyWordSpec
+    with should.Matchers
+    with ServiceSpec
+    with WsTestClient
+    with FutureAwaits
+    with DefaultAwaitTimeout
+    with MimeTypes {
+  def externalServices: Seq[String] = Seq.empty
 
   override def beforeAll(): Unit = {}
-  override def afterAll():  Unit = {}
 
-  implicit val timeout: Duration = 3 minutes
+  override def afterAll(): Unit = {}
 
-  def await[A](future: Future[A])(implicit timeout: Duration): A = Await.result(future, timeout)
-
-  val contentAsJson: (String, String) = ("Content-Type", "application/json")
+  val contentAsJson: (String, String) = "Content-Type" -> JSON
 }

@@ -16,21 +16,17 @@
 
 package helpers
 
-import java.nio.charset.Charset
+import org.scalatest.OptionValues
+import org.scalatest.matchers.should
+import org.scalatest.wordspec.AnyWordSpec
 
-import akka.stream.Materializer
-import akka.util.ByteString
-import org.scalatest.{Matchers, OptionValues, WordSpecLike}
-import play.api.libs.json.{JsValue, Json}
-import play.api.mvc.Result
+abstract class UnitSpec extends AnyWordSpec with should.Matchers with OptionValues {
+  import play.api.mvc.Result
 
-import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.duration._
-import scala.concurrent.{Await, Future}
+  import scala.concurrent.duration._
+  import scala.concurrent.{Await, Future}
 
-trait UnitSpec extends WordSpecLike with Matchers with OptionValues {
-
-  implicit val defaultTimeout: FiniteDuration = 5 seconds
+  implicit val defaultTimeout: FiniteDuration = 5.seconds
 
   implicit def extractAwait[A](future: Future[A]): A = await[A](future)
 
@@ -42,21 +38,4 @@ trait UnitSpec extends WordSpecLike with Matchers with OptionValues {
   def status(of: Result): Int = of.header.status
 
   def status(of: Future[Result])(implicit timeout: Duration): Int = status(Await.result(of, timeout))
-
-  def jsonBodyOf(result: Result)(implicit mat: Materializer): JsValue = {
-    Json.parse(bodyOf(result))
-  }
-
-  def jsonBodyOf(resultF: Future[Result])(implicit mat: Materializer): Future[JsValue] = {
-    resultF.map(jsonBodyOf)
-  }
-
-  def bodyOf(result: Result)(implicit mat: Materializer): String = {
-    val bodyBytes: ByteString = await(result.body.consumeData)
-    bodyBytes.decodeString(Charset.defaultCharset().name)
-  }
-
-  def bodyOf(resultF: Future[Result])(implicit mat: Materializer): Future[String] = {
-    resultF.map(bodyOf)
-  }
 }
