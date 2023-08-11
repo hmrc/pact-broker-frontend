@@ -18,23 +18,16 @@ package support
 
 import org.scalatest.matchers.should
 import org.scalatest.wordspec.AnyWordSpec
-import play.api.http.MimeTypes
+import org.scalatestplus.play.guice.GuiceOneServerPerSuite
 import play.api.test.{DefaultAwaitTimeout, FutureAwaits, WsTestClient}
-import uk.gov.hmrc.integration.ServiceSpec
 
-trait BaseISpec
-    extends AnyWordSpec
-    with should.Matchers
-    with ServiceSpec
-    with WsTestClient
-    with FutureAwaits
-    with DefaultAwaitTimeout
-    with MimeTypes {
-  def externalServices: Seq[String] = Seq.empty
+trait BaseISpec extends AnyWordSpec with should.Matchers with GuiceOneServerPerSuite with WsTestClient with FutureAwaits with DefaultAwaitTimeout {
+  import play.api.Application
+  import play.api.inject.guice.GuiceApplicationBuilder
 
-  override def beforeAll(): Unit = {}
+  override lazy val fakeApplication: Application = GuiceApplicationBuilder()
+    .configure(additionalConfig)
+    .build()
 
-  override def afterAll(): Unit = {}
-
-  val contentAsJson: (String, String) = "Content-Type" -> JSON
+  def additionalConfig: Map[String, _] = Map("pactFilesLoader.enabled" -> false)
 }
