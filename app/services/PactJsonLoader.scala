@@ -24,23 +24,18 @@ import java.io.File
 import java.util.regex.Pattern
 import java.util.zip.ZipFile
 import javax.inject.{Inject, Singleton}
-import scala.collection.JavaConverters._
 import scala.io.Source
-import scala.util.matching.Regex
 import scala.util.{Failure, Success, Try}
 
 @Singleton
 class PactJsonLoader @Inject() extends Logging {
+  import PactJsonLoader._
 
-  lazy val jsonPactFileNameVersionRegex: Regex = raw".*-([0-9]+\.[0-9]+\.[0-9]+)\.json".r
-  lazy val jsonPactsPackageName:         String = "pacts"
-  lazy val jsonPactResourcePathRegex:    Regex = s".*$jsonPactsPackageName/.*\\.json".r
+  import scala.jdk.CollectionConverters._
 
-  sealed trait PactJsonLocation {
-    def location: String
-  }
-  case class ResourcePath(entry: String) extends PactJsonLocation { override def location: String = entry }
-  case class FilePath(path: String)      extends PactJsonLocation { override def location: String = path }
+  private val jsonPactFileNameVersionRegex = raw".*-([0-9]+\.[0-9]+\.[0-9]+)\.json".r
+  private val jsonPactsPackageName = "pacts"
+  private val jsonPactResourcePathRegex = s".*$jsonPactsPackageName/.*\\.json".r
 
   /** for all elements of java.class.path get a Collection of resources Pattern pattern = Pattern.compile(".*"); gets all resources
     *
@@ -90,8 +85,8 @@ class PactJsonLoader @Inject() extends Logging {
     } match {
       case Success((found, total)) if found.nonEmpty =>
         logger.info(s"[GG-5850] ${found.size}/${total.size} entries matched in ${jarFile.getName}."); found.map(ResourcePath)
-      case Success((found, total)) => found.map(ResourcePath)
-      case Failure(e)              => logger.error(s"[GG-5850] Error reading file: ${jarFile.getName}", e); Seq.empty[ResourcePath]
+      case Success((found, _)) => found.map(ResourcePath)
+      case Failure(e)          => logger.error(s"[GG-5850] Error reading file: ${jarFile.getName}", e); Seq.empty[ResourcePath]
     }
   }
 
@@ -145,4 +140,9 @@ class PactJsonLoader @Inject() extends Logging {
       result
     }
   }
+}
+object PactJsonLoader {
+  private sealed abstract class PactJsonLocation(val location: String)
+  private case class ResourcePath(entry: String) extends PactJsonLocation(entry)
+  private case class FilePath(path: String)      extends PactJsonLocation(path)
 }
