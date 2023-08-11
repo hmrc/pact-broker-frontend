@@ -105,7 +105,7 @@ class PactJsonLoader @Inject() extends Logging {
     val resourcePaths = getResources(jsonPactResourcePathRegex.pattern.pattern())
     logger.info(s"[GG-5850] ${resourcePaths.size} pact json files found, parsing..")
     resourcePaths.map { resourcePath =>
-      val resourceName = resourcePath.location.split("/").reverse.headOption.getOrElse(resourcePath)
+      val resourceName = resourcePath.location.split("/").last
       val result = (for {
         version <- resourcePath.location match {
                      case jsonPactFileNameVersionRegex(s) => Right(s)

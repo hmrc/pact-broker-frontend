@@ -16,19 +16,9 @@
 
 package services
 
-import org.scalatest.matchers.should
-import org.scalatest.wordspec.AnyWordSpec
-import org.scalatestplus.play.guice.GuiceOneAppPerSuite
-import play.api.test.{DefaultAwaitTimeout, FutureAwaits}
+import support.BaseISpec
 
-class PactJsonFilesExecutorISpec extends AnyWordSpec with should.Matchers with GuiceOneAppPerSuite with FutureAwaits with DefaultAwaitTimeout {
-  import play.api.Application
-  import play.api.inject.guice.GuiceApplicationBuilder
-
-  override lazy val fakeApplication: Application = GuiceApplicationBuilder()
-    .configure("pactFilesLoader.enabled" -> false)
-    .build()
-
+class PactJsonFilesExecutorISpec extends BaseISpec {
   "execute()" should {
     "Read parse and add in pacts from json files in conf/pacts folder" in {
       val executor = app.injector.instanceOf[PactJsonFilesExecutor]

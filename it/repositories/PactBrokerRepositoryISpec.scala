@@ -31,15 +31,15 @@ class PactBrokerRepositoryISpec extends BaseISpec with ScalaCheckPropertyChecks 
       forAll(pactsWithVersion) { pact =>
         val insertResult = await(repository.add(pact))
         assert(insertResult.isRight)
-        val findResult = await(repository.find(pact.consumer.name, pact.provider.name, pact.version))
+        val findResult = await(repository.find(pact.consumer.name, pact.provider.name, pact.version.toString))
         findResult.value shouldBe pact
-        val deleteIsSuccess = await(repository.removePact(pact.provider.name, pact.consumer.name, pact.version))
+        val deleteIsSuccess = await(repository.removePact(pact.provider.name, pact.consumer.name, pact.version.toString))
         assert(deleteIsSuccess)
       }
   }
 }
 object PactBrokerRepositoryISpec {
-  import models.PactWithVersion
+  import models.{PactWithVersion, Version}
   import org.scalacheck.Gen
   import play.api.libs.json.Json
 
@@ -49,7 +49,7 @@ object PactBrokerRepositoryISpec {
     major <- Gen.chooseNum(0, 255)
     minor <- Gen.chooseNum(0, 255)
     patch <- Gen.chooseNum(0, 255)
-  } yield s"$major.$minor.$patch"
+  } yield Version(major, minor, patch)
 
   private val pactsWithVersion: Gen[PactWithVersion] = for {
     provider     <- mdtpServices

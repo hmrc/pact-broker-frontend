@@ -18,13 +18,10 @@ package models
 
 import play.api.libs.json.{JsArray, Json, OFormat}
 
-case class PactWithVersion(provider: MDTPService, consumer: MDTPService, version: String, interactions: JsArray) {
-  import PactWithVersion.versionRegex
-
-  require(version matches versionRegex.toString, s"version $version is invalid")
-}
+final case class PactWithVersion(provider: MDTPService, consumer: MDTPService, version: Version, interactions: JsArray)
 object PactWithVersion {
   implicit val fmt: OFormat[PactWithVersion] = Json.format
 
-  private val versionRegex = "([0-9]+[.][0-9]+[.][0-9]+)".r
+  def apply(provider: MDTPService, consumer: MDTPService, version: String, interactions: JsArray): PactWithVersion =
+    apply(provider, consumer, Version(version), interactions)
 }

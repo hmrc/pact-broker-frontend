@@ -25,12 +25,10 @@ import scala.concurrent.{ExecutionContext, Future}
 
 class PactService @Inject() (repo: AbstractPactBrokerRepository)(implicit ec: ExecutionContext) extends Logging {
 
-  def makePact(inputPact: PactWithVersion): Pact = {
-    new Pact(inputPact.provider, inputPact.consumer, inputPact.interactions)
-  }
+  def makePact(inputPact: PactWithVersion): Pact = Pact(inputPact.provider, inputPact.consumer, inputPact.interactions)
 
   def addPactTest(producerId: String, consumerId: String, pactWithVersion: PactWithVersion): Future[Either[String, Unit]] = for {
-    optPact <- repo.find(consumerId, producerId, pactWithVersion.version)
+    optPact <- repo.find(consumerId, producerId, pactWithVersion.version.toString)
     result <- optPact match {
                 case Some(res) if res.interactions == pactWithVersion.interactions =>
                   logger.info(s"[GG-5850] addPactTest: Identical PACT Found ${res.provider.name}/${res.consumer.name}/${res.version}")
@@ -52,44 +50,11 @@ class PactService @Inject() (repo: AbstractPactBrokerRepository)(implicit ec: Ex
               }
   } yield result
 
-  def getVersionedPact(producerId: String, consumerId: String, version: String): Future[Option[PactWithVersion]] = {
+  def getVersionedPact(producerId: String, consumerId: String, version: String): Future[Option[PactWithVersion]] =
     repo.find(consumerId, producerId, version)
-  }
 
-  def getMostRecent(producerId: String, consumerId: String): Future[Option[PactWithVersion]] = {
-    for {
-      pactList <- repo.find(consumerId, producerId)
-    } yield {
-      pactList.length match {
-        case 0 => None
-        case 1 => Some(pactList.head)
-        case _ => Some(pactList.reduceLeft[PactWithVersion]((x, y) => findMostRecentOutOfTwo(x, y)))
-      }
+  def getMostRecent(producerId: String, consumerId: String): Future[Option[PactWithVersion]] =
+    repo.find(consumerId, producerId).map { pacts =>
+      pacts.maxByOption(_.version)
     }
-  }
-
-  private def findMostRecentOutOfTwo(pactWithVersion1: PactWithVersion, pactWithVersion2: PactWithVersion): PactWithVersion = {
-    val pact1Version: Array[Int] = pactWithVersion1.version.split("\\.").map(a => a.toInt)
-    val pact2Version = pactWithVersion2.version.split("\\.").map(a => a.toInt)
-    val normalisedDiff = pact1Version.zip(pact2Version).map { case (a, b) => a - b }.map {
-      case x if x > 0 => 1
-      case x if x < 0 => -1
-      case _          => 0
-    }
-    normalisedDiff(0) match {
-      case 1  => pactWithVersion1
-      case -1 => pactWithVersion2
-      case _ =>
-        normalisedDiff(1) match {
-          case 1  => pactWithVersion1
-          case -1 => pactWithVersion2
-          case _ =>
-            normalisedDiff(2) match {
-              case 1  => pactWithVersion1
-              case -1 => pactWithVersion2
-              case _  => pactWithVersion2
-            }
-        }
-    }
-  }
 }

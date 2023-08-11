@@ -41,7 +41,7 @@ class ConsumerController @Inject() (
         errors => Future.successful(BadRequest(errors.mkString)),
         { pactBody =>
 
-          val pactWithVersion: PactWithVersion = new PactWithVersion(pactBody.provider, pactBody.consumer, version, pactBody.interactions)
+          val pactWithVersion: PactWithVersion = PactWithVersion(pactBody.provider, pactBody.consumer, version, pactBody.interactions)
 
           pactService.addPactTest(producerId, consumerId, pactWithVersion).map {
             case Right(_)          => Ok

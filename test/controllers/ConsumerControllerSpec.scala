@@ -37,18 +37,18 @@ class ConsumerControllerSpec extends UnitSpec with MockitoSugar with Results {
     val mockPactService:          PactService = mock[PactService]
     val consumerController = new ConsumerController(stubControllerComponents(), mockPactBrokerRepository, mockPactService)
 
-    val goodPact = new Pact(new MDTPService("Provider"), new MDTPService("Consumer"), Json.arr("interactions", ""))
+    val goodPact = Pact(MDTPService("Provider"), MDTPService("Consumer"), Json.arr("interactions", ""))
     val badPact: JsValue = Json.toJson("""{"provider" : {"name" : "Provider"},"consumer" : {"name" : "Consumer"}}""")
 
     val getRequest:  FakeRequest[AnyContentAsEmpty.type] = FakeRequest("GET", "/")
     val goodRequest: FakeRequest[JsValue] = FakeRequest("PUT", "/").withBody(Json.toJson(goodPact))
     val badRequest:  FakeRequest[JsValue] = FakeRequest("PUT", "/").withBody(Json.toJson(badPact))
 
-    val goodPactWithVersion = new PactWithVersion(new MDTPService("Provider"), new MDTPService("Consumer"), "1.0.0", Json.arr("interactions", ""))
+    val goodPactWithVersion = PactWithVersion(MDTPService("Provider"), MDTPService("Consumer"), "1.0.0", Json.arr("interactions", ""))
     val newPactWithVersion =
-      new PactWithVersion(new MDTPService("Provider"), new MDTPService("Consumer"), "1.5.3", Json.arr("interactions", "this is a new pact"))
+      PactWithVersion(MDTPService("Provider"), MDTPService("Consumer"), "1.5.3", Json.arr("interactions", "this is a new pact"))
     val differentPactWithVersion =
-      new PactWithVersion(new MDTPService("Provider"), new MDTPService("Consumer"), "1.0.0", Json.arr("interactions", "a"))
+      PactWithVersion(MDTPService("Provider"), MDTPService("Consumer"), "1.0.0", Json.arr("interactions", "a"))
   }
 
   "addPactTest" should {
