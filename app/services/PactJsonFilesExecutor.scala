@@ -18,11 +18,9 @@ package services
 
 import config.PactBrokerConfig
 import models.PactWithVersion
-import play.api.Logging
 
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
-import scala.util.Failure
 
 case class PactJsonFilesExecutorResult(errorCount: Int, successCount: Int)
 
@@ -33,28 +31,12 @@ class PactJsonFilesExecutor @Inject() (
   pactConfig:      PactBrokerConfig,
   pactService:     PactService
 )(implicit executionContext: ExecutionContext)
-    extends Logging {
+    extends AbstractPactJsonFilesExecutor(pactConfig.pactFilesLoaderEnabled) {
 
-  if (pactConfig.pactFilesLoaderEnabled) {
-    mongoLocks.dbPopulationLock.tryLock[PactJsonFilesExecutorResult] {
-      logger.info(s"[GG-5850] Starting pact json file loader.")
-      execute()
-    } map {
-      case Some(result) =>
-        logger.info(s"[GG-5850] Completed loading pact json files. ${result.successCount} pacts were added and ${result.errorCount} failed.")
-      case None =>
-        logger.warn(s"[GG-5850] Mongo locked by another instance... skipping pact json file loader.")
-    } onComplete {
-      case Failure(e) => logger.error(s"[GG-5850] Error while running pact json file loader.", e)
-      case _          => ()
-    }
-  } else {
-    logger.warn(s"[GG-5850] Pact files loader is disabled in config.")
-  }
-
-  def execute(): Future[PactJsonFilesExecutorResult] = {
+  def executeWithLock(): Future[Option[PactJsonFilesExecutorResult]] = mongoLocks.dbPopulationLock.tryLock {
+    logger.info(s"[GG-5850] Starting pact json file loader.")
     val pactFileLoadResults = pactFilesLoader.loadPacts()
-    type ResultLists = Tuple2[List[String], List[PactWithVersion]]
+    type ResultLists = (List[String], List[PactWithVersion])
     val (errors, pactsWithVersion) = pactFileLoadResults.foldLeft[ResultLists](List[String]() -> List[PactWithVersion]()) {
       (resultLists: ResultLists, result: Either[String, PactWithVersion]) =>
         result match {
@@ -78,5 +60,4 @@ class PactJsonFilesExecutor @Inject() (
       })
       .map(results => PactJsonFilesExecutorResult(errors.size + results.count(_.isLeft), results.count(_.isRight)))
   }
-
 }

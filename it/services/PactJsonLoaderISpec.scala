@@ -16,15 +16,13 @@
 
 package services
 
-import helpers.UnitSpec
-import models.{MDTPService, PactWithVersion}
-import org.mockito.MockitoSugar
-import org.scalatestplus.play.guice.GuiceOneAppPerSuite
-import play.api.libs.json.JsArray
-import play.api.mvc.Results
+import support.BaseISpec
 
-class PactJsonLoaderSpec extends UnitSpec with MockitoSugar with GuiceOneAppPerSuite with Results {
-  private val pactJsonLoader = new PactJsonLoader
+class PactJsonLoaderISpec extends BaseISpec {
+  import models._
+  import play.api.libs.json.JsArray
+
+  private val pactJsonLoader = app.injector.instanceOf[PactJsonLoader]
 
   "loadPactsFromClasspath" should {
     "load pacts, rejecting/accepting as appropriate" in {

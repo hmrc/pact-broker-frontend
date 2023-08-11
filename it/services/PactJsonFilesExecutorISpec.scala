@@ -16,12 +16,10 @@
 
 package services
 
-import org.scalatest.matchers.should
-import org.scalatest.wordspec.AnyWordSpec
-import org.scalatestplus.play.guice.GuiceOneAppPerSuite
-import play.api.test.{DefaultAwaitTimeout, FutureAwaits}
+import org.scalatest.OptionValues
+import support.BaseISpec
 
-class PactJsonFilesExecutorISpec extends AnyWordSpec with should.Matchers with GuiceOneAppPerSuite with FutureAwaits with DefaultAwaitTimeout {
+class PactJsonFilesExecutorISpec extends BaseISpec with OptionValues {
   import play.api.Application
   import play.api.inject.guice.GuiceApplicationBuilder
 
@@ -35,7 +33,7 @@ class PactJsonFilesExecutorISpec extends AnyWordSpec with should.Matchers with G
 
       println(s"packFilesLoader.enabled = ${app.configuration.get[Boolean]("pactFilesLoader.enabled")}")
 
-      val result = await(executor.execute())
+      val result = await(executor.executeWithLock()).value
       result.errorCount shouldBe 3
       result.successCount should be > 0
     }

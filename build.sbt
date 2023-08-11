@@ -12,8 +12,6 @@ lazy val root = Project(appName, file("."))
   .settings(
     majorVersion := 0,
     libraryDependencies ++= AppDependencies(),
-    Test / unmanagedResourceDirectories += (Test / baseDirectory).value / "test-resources",
-    Test / unmanagedJars += (Test / baseDirectory).value / "test-resources" / "pacts" / "pact-file.jar",
     IntegrationTest / unmanagedResourceDirectories += (Test / baseDirectory).value / "test-resources",
     IntegrationTest / unmanagedJars += (Test / baseDirectory).value / "test-resources" / "pacts" / "pact-file.jar",
     scalaVersion := "2.12.16",
