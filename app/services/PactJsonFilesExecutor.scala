@@ -19,6 +19,7 @@ package services
 import config.PactBrokerConfig
 import models.PactWithVersion
 import play.api.Logging
+import uk.gov.hmrc.mongo.lock.LockService
 
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
@@ -28,7 +29,7 @@ case class PactJsonFilesExecutorResult(errorCount: Int, successCount: Int)
 
 @Singleton
 class PactJsonFilesExecutor @Inject() (
-  mongoLocks:      MongoLocks,
+  lockService:     LockService,
   pactFilesLoader: PactJsonLoader,
   pactConfig:      PactBrokerConfig,
   pactService:     PactService
@@ -36,7 +37,7 @@ class PactJsonFilesExecutor @Inject() (
     extends Logging {
 
   if (pactConfig.pactFilesLoaderEnabled) {
-    mongoLocks.dbPopulationLock.tryLock[PactJsonFilesExecutorResult] {
+    lockService.withLock {
       logger.info(s"[GG-5850] Starting pact json file loader.")
       execute()
     } map {
@@ -54,7 +55,7 @@ class PactJsonFilesExecutor @Inject() (
 
   def execute(): Future[PactJsonFilesExecutorResult] = {
     val pactFileLoadResults = pactFilesLoader.loadPacts()
-    type ResultLists = Tuple2[List[String], List[PactWithVersion]]
+    type ResultLists = (List[String], List[PactWithVersion])
     val (errors, pactsWithVersion) = pactFileLoadResults.foldLeft[ResultLists](List[String]() -> List[PactWithVersion]()) {
       (resultLists: ResultLists, result: Either[String, PactWithVersion]) =>
         result match {
