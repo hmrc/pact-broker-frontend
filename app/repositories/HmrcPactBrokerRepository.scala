@@ -18,6 +18,8 @@ package repositories
 
 import com.google.inject.{Inject, Singleton}
 import models.PactWithVersion
+import org.mongodb.scala.model.IndexModel
+import org.mongodb.scala.model.Indexes.ascending
 import repositories.AbstractPactBrokerRepository._
 import uk.gov.hmrc.mongo.MongoComponent
 import uk.gov.hmrc.mongo.play.json.PlayMongoRepository
@@ -26,7 +28,14 @@ import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
 class HmrcPactBrokerRepository @Inject() (mongoComponent: MongoComponent)(implicit ec: ExecutionContext)
-    extends PlayMongoRepository[PactWithVersion](mongoComponent, collectionName, implicitly, Seq())
+    extends PlayMongoRepository[PactWithVersion](
+      mongoComponent,
+      collectionName,
+      implicitly,
+      Seq(
+        IndexModel(ascending("provider.name", "consumer.name", "version"))
+      )
+    )
     with AbstractPactBrokerRepository {
   import org.mongodb.scala.model.Filters.{and, equal}
 
