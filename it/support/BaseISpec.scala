@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 HM Revenue & Customs
+ * Copyright 2023 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,32 +16,18 @@
 
 package support
 
-import org.scalatest.{LoneElement, Matchers, WordSpecLike}
-import play.api.test.WsTestClient
-import play.api.{Configuration, Environment}
-import uk.gov.hmrc.integration.ServiceSpec
-import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
+import org.scalatest.matchers.should
+import org.scalatest.wordspec.AnyWordSpec
+import org.scalatestplus.play.guice.GuiceOneServerPerSuite
+import play.api.test.{DefaultAwaitTimeout, FutureAwaits, WsTestClient}
 
-import scala.concurrent.duration._
-import scala.concurrent.{Await, Future}
+trait BaseISpec extends AnyWordSpec with should.Matchers with GuiceOneServerPerSuite with WsTestClient with FutureAwaits with DefaultAwaitTimeout {
+  import play.api.Application
+  import play.api.inject.guice.GuiceApplicationBuilder
 
+  override lazy val fakeApplication: Application = GuiceApplicationBuilder()
+    .configure(additionalConfig)
+    .build()
 
-trait BaseISpec extends WordSpecLike with Matchers with ServiceSpec with WsTestClient with LoneElement {
-
-  override def externalServices: Seq[String] = Seq.empty
-
-  override def beforeAll(): Unit = {
-    super.beforeAll()
-  }
-  override def afterAll(): Unit = {}
-
-  val env: Environment = Environment.simple()
-  val configuration: Configuration = Configuration.load(env)
-  val serviceConfig: ServicesConfig = new ServicesConfig(configuration)
-
-  implicit val timeout: Duration = 3 minutes
-
-  def await[A](future: Future[A])(implicit timeout: Duration): A = Await.result(future,timeout)
-
-  val contentAsJson: (String,String) = ("Content-Type","application/json")
+  def additionalConfig: Map[String, _] = Map("pactFilesLoader.enabled" -> false)
 }

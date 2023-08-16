@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 HM Revenue & Customs
+ * Copyright 2023 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,20 +16,12 @@
 
 package models
 
-import play.api.libs.json.{JsArray, Json, OWrites, Reads}
+import play.api.libs.json.{JsArray, Json, OFormat}
 
-import scala.util.matching.Regex
-
-case class PactWithVersion(provider: MDTPService, consumer: MDTPService, version: String, interactions: JsArray) {
-  require(PactWithVersion.isValid(version),s"version $version is invalid")
-}
-
+final case class PactWithVersion(provider: MDTPService, consumer: MDTPService, version: Version, interactions: JsArray)
 object PactWithVersion {
-  implicit val reads: Reads[PactWithVersion] = Json.reads[PactWithVersion]
-  implicit val writes: OWrites[PactWithVersion] = Json.writes[PactWithVersion]
-  val versionRegex: Regex = "([0-9]+[.][0-9]+[.][0-9]+)".r
-  def isValid(version:String): Boolean = version match {
-    case versionRegex(_) => true
-    case _ => false
-  }
+  implicit val fmt: OFormat[PactWithVersion] = Json.format
+
+  def apply(provider: MDTPService, consumer: MDTPService, version: String, interactions: JsArray): PactWithVersion =
+    apply(provider, consumer, Version(version), interactions)
 }

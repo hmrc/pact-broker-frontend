@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 HM Revenue & Customs
+ * Copyright 2023 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,8 +30,8 @@ class PactBrokerScISpec extends BaseISpec {
   def deleteUrl(version: String = "1.0.0"): String = s"/pact-broker/pacts/provider/$provider/consumer/$consumer/version/$version"
 
   lazy val pact: Pact = new Pact(new MDTPService("ProviderService"), new MDTPService("ConsumerService"), Json.parse(jsonInteraction).as[JsArray])
-  lazy val alternativePact: Pact = new Pact(new MDTPService("ProviderService"), new MDTPService("ConsumerService"), Json.parse(alternativeJsonInteraction).as[JsArray])
-
+  lazy val alternativePact: Pact =
+    new Pact(new MDTPService("ProviderService"), new MDTPService("ConsumerService"), Json.parse(alternativeJsonInteraction).as[JsArray])
 
   val jsonInteraction: String =
     """

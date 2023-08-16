@@ -1,19 +1,16 @@
+import sbt.*
 import sbt.Keys.parallelExecution
-import sbt._
 import scoverage.ScoverageKeys
 
 object ScoverageSettings {
-  def apply() = Seq( // Semicolon-separated list of regexes matching classes to exclude
+  def apply(): Seq[Def.Setting[?]] = Seq( // Semicolon-separated list of regexes matching classes to exclude
     ScoverageKeys.coverageExcludedPackages := "<empty>;Reverse.*;.*(config|views.*);.*(AuthService|BuildInfo|Routes).*",
     ScoverageKeys.coverageExcludedFiles := Seq(
-      "" +
-        "<empty>",
+      "<empty>",
       "Reverse.*",
-      ".*models.*",
       ".*connectors.*",
       ".*BuildInfo.*",
       ".*javascript.*",
-      ".*repositories.*",
       ".*Routes.*",
       ".*GuiceInjector",
       ".*DateTimeQueryStringBinder.*", // better covered via wiremock/E2E integration tests

@@ -14,13 +14,20 @@
  * limitations under the License.
  */
 
-package config
+package services
 
-import play.api.{Configuration, Logging}
-import javax.inject.{Inject, Singleton}
+import support.BaseISpec
 
-@Singleton
-class PactBrokerConfig @Inject() (config: Configuration) extends Logging {
+class PactJsonFilesExecutorISpec extends BaseISpec {
+  "execute()" should {
+    "Read parse and add in pacts from json files in conf/pacts folder" in {
+      val executor = app.injector.instanceOf[PactJsonFilesExecutor]
 
-  lazy val pactFilesLoaderEnabled: Boolean = config.get[Boolean]("pactFilesLoader.enabled")
+      println(s"packFilesLoader.enabled = ${app.configuration.get[Boolean]("pactFilesLoader.enabled")}")
+
+      val result = await(executor.execute())
+      result.errorCount shouldBe 3
+      result.successCount should be > 0
+    }
+  }
 }
