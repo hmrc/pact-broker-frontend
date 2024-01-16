@@ -4,6 +4,8 @@ import uk.gov.hmrc.DefaultBuildSettings.integrationTestSettings
 
 lazy val appName: String = "pact-broker-frontend"
 
+ThisBuild / libraryDependencySchemes += "org.scala-lang.modules" %% "scala-xml" % VersionScheme.Always // it should not be needed but the build still fails without it
+
 lazy val root = Project(appName, file("."))
   .enablePlugins(play.sbt.PlayScala, SbtDistributablesPlugin)
   .configs(IntegrationTest)
