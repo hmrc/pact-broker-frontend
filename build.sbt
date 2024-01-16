@@ -3,7 +3,8 @@ import sbt.Keys.unmanagedResourceDirectories
 import uk.gov.hmrc.DefaultBuildSettings.integrationTestSettings
 
 lazy val appName: String = "pact-broker-frontend"
-
+ThisBuild / majorVersion := 1
+ThisBuild / scalaVersion := "2.13.8"
 ThisBuild / libraryDependencySchemes += "org.scala-lang.modules" %% "scala-xml" % VersionScheme.Always // it should not be needed but the build still fails without it
 
 lazy val root = Project(appName, file("."))
@@ -12,11 +13,9 @@ lazy val root = Project(appName, file("."))
   .settings(ScoverageSettings())
   .settings(integrationTestSettings() *)
   .settings(
-    majorVersion := 0,
     libraryDependencies ++= AppDependencies(),
     IntegrationTest / unmanagedResourceDirectories += (Test / baseDirectory).value / "test-resources",
     IntegrationTest / unmanagedJars += (Test / baseDirectory).value / "test-resources" / "pacts" / "pact-file.jar",
-    scalaVersion := "2.13.8",
     playDefaultPort := 9866,
     resolvers += Resolver.jcenterRepo,
     scalafmtOnCompile := true
