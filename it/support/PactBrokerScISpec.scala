@@ -27,7 +27,7 @@ class PactBrokerScISpec extends BaseISpec {
   def putUrl(version: String = "1.0.0"): String = s"/pact-broker/pacts/provider/$provider/consumer/$consumer/version/$version"
   def getUrl(version: String = "1.0.0"): String = s"/pact-broker/pacts/provider/$provider/consumer/$consumer/version/$version"
   def getLatestUrl: String = s"/pact-broker/pacts/provider/$provider/consumer/$consumer/latest"
-  def deleteUrl(version: String = "1.0.0"): String = s"/pact-broker/pacts/provider/$provider/consumer/$consumer/version/$version"
+  def deleteUrl(version: String = "1.0.0"): String = s"/test-only/pact-broker/pacts/provider/$provider/consumer/$consumer/version/$version"
 
   lazy val pact: Pact = new Pact(new MDTPService("ProviderService"), new MDTPService("ConsumerService"), Json.parse(jsonInteraction).as[JsArray])
   lazy val alternativePact: Pact =
