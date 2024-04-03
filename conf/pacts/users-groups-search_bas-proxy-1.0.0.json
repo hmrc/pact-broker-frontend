@@ -127,14 +127,9 @@
               "source" : "adminapi"
             },
             "lockedUntil" : "2018-10-19T14:40:25Z"
-          },
-          "recoveryWord" : true
+          }
         },
         "matchingRules" : {
-          "$.body.recoveryWord" : {
-            "match" : "regex",
-            "regex" : "true|false"
-          },
           "$.body.password.lockedUntil" : {
             "match" : "regex",
             "regex" : "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}[^.]+$"
