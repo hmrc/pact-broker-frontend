@@ -14,8 +14,6 @@ lazy val root = Project(appName, file("."))
       "-Werror",
       "-Wconf:src=routes/.*:s"
     ),
-    Test / unmanagedResourceDirectories += (Test / baseDirectory).value / "test-resources",
-    Test / unmanagedJars += (Test / baseDirectory).value / "test-resources" / "pacts" / "pact-file.jar",
     libraryDependencies ++= AppDependencies(),
     Test / parallelExecution := false,
     Test / fork := false,
@@ -32,5 +30,7 @@ lazy val it = project
   .enablePlugins(PlayScala)
   .dependsOn(root % "test->test") // the "test->test" allows reusing test code and test dependencies
   .settings(
-      DefaultBuildSettings.itSettings()
+    DefaultBuildSettings.itSettings(),
+    Test / unmanagedResourceDirectories += ((root / baseDirectory).value / "test-resources"),
+    Test / unmanagedJars += ((root / baseDirectory).value / "test-resources" / "pacts" / "pact-file.jar")
   )
