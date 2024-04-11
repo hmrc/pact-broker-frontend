@@ -31,6 +31,7 @@ lazy val it = project
   .dependsOn(root % "test->test") // the "test->test" allows reusing test code and test dependencies
   .settings(
     DefaultBuildSettings.itSettings(),
+    Test / fork := true,
     Test / unmanagedResourceDirectories += ((root / baseDirectory).value / "test-resources"),
     Test / unmanagedJars += ((root / baseDirectory).value / "test-resources" / "pacts" / "pact-file.jar")
   )
