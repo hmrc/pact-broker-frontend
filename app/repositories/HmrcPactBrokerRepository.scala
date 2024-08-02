@@ -22,6 +22,7 @@ import org.mongodb.scala.model.IndexModel
 import org.mongodb.scala.model.Indexes.ascending
 import repositories.AbstractPactBrokerRepository._
 import uk.gov.hmrc.mongo.MongoComponent
+import org.mongodb.scala.{ObservableFuture, SingleObservableFuture}
 import uk.gov.hmrc.mongo.play.json.PlayMongoRepository
 
 import scala.concurrent.{ExecutionContext, Future}

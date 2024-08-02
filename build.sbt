@@ -4,16 +4,13 @@ import uk.gov.hmrc.DefaultBuildSettings
 
 lazy val appName: String = "pact-broker-frontend"
 ThisBuild / majorVersion := 1
-ThisBuild / scalaVersion := "2.13.12"
+ThisBuild / scalaVersion := "3.3.3"
 
 lazy val root = Project(appName, file("."))
   .enablePlugins(play.sbt.PlayScala, SbtDistributablesPlugin)
   .settings(ScoverageSettings())
   .settings(
-    scalacOptions ++= Seq(
-      "-Werror",
-      "-Wconf:src=routes/.*:s"
-    ),
+    scalacOptions := scalacOptions.value.diff(Seq("-Wunused:all")),
     libraryDependencies ++= AppDependencies(),
     Test / parallelExecution := false,
     Test / fork := false,
