@@ -13,7 +13,7 @@ lazy val root = Project(appName, file("."))
   .settings(ScoverageSettings())
   .settings(
     scalacOptions ++= Seq(
-      "-new-syntax",
+      "-indent",
       "-rewrite"
 //      "-Werror",
 //      "-Wconf:src=routes/.*:s"

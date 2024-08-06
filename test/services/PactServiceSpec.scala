@@ -26,8 +26,8 @@ import play.api.libs.json.Json
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
-class PactServiceSpec extends UnitSpec with MockitoSugar {
-  trait SetUp {
+class PactServiceSpec extends UnitSpec with MockitoSugar:
+  trait SetUp:
     import repositories.AbstractPactBrokerRepository
     import AbstractPactBrokerRepository.WriteError
 
@@ -45,67 +45,56 @@ class PactServiceSpec extends UnitSpec with MockitoSugar {
 
     protected val successWriteResult: Future[Either[WriteError, Unit]] = Future.successful(Right(()))
     protected val errorWriteResult:   Future[Either[WriteError, Unit]] = Future.successful(Left("Error"))
-  }
 
   "makePact" should {
-    "create a pact when given a pactWithVersion" in new SetUp {
+    "create a pact when given a pactWithVersion" in new SetUp:
       val result: Pact = pactService.makePact(pactWithVersion)
       result shouldBe pact
-    }
   }
 
   "addPactTest" should {
-    "return true when there is no existing pact in the database" in new SetUp {
+    "return true when there is no existing pact in the database" in new SetUp:
       when(mockRepository.find(eqTo(consumer), eqTo(provider), eqTo(version))) thenReturn Future.successful(None)
       when(mockRepository.add(eqTo(pactWithVersion))) thenReturn successWriteResult
       val result = await(pactService.addPactTest(provider, consumer, pactWithVersion))
       assert(result.isRight)
-    }
 
-    "return true when there is an identical pact in the database" in new SetUp {
+    "return true when there is an identical pact in the database" in new SetUp:
       when(mockRepository.find(eqTo(consumer), eqTo(provider), eqTo(version))).thenReturn(Future.successful(Some(pactWithVersion)))
       val result = await(pactService.addPactTest(provider, consumer, pactWithVersion))
       assert(result.isRight)
-    }
 
-    "return true when a pact has the same provider, consumer and version but has a different body in the database" in new SetUp {
+    "return true when a pact has the same provider, consumer and version but has a different body in the database" in new SetUp:
       when(mockRepository.find(eqTo(consumer), eqTo(provider), eqTo(version))).thenReturn(Future.successful(Some(pactWithDifferentInteractions)))
       when(mockRepository.add(eqTo(pactWithVersion))) thenReturn successWriteResult
       val result = await(pactService.addPactTest(provider, consumer, pactWithVersion))
       assert(result.isRight)
-    }
 
-    "will return errors when there's a problem adding the new pact into mongo" in new SetUp {
+    "will return errors when there's a problem adding the new pact into mongo" in new SetUp:
       when(mockRepository.find(eqTo(consumer), eqTo(provider), eqTo(version))).thenReturn(Future.successful(Some(pactWithDifferentInteractions)))
       when(mockRepository.add(eqTo(pactWithVersion))) thenReturn errorWriteResult
       val result = await(pactService.addPactTest(provider, consumer, pactWithVersion))
       result shouldBe Left("Error")
-    }
   }
 
   "getVersionedPact" should {
-    "return the pact with the corresponding version from the pact repository" in new SetUp {
+    "return the pact with the corresponding version from the pact repository" in new SetUp:
       when(mockRepository.find(eqTo(consumer), eqTo(provider), eqTo(version))).thenReturn(Future.successful(Some(pactWithVersion)))
       val result: Option[PactWithVersion] = await(pactService.getVersionedPact(provider, consumer, version))
       result should contain(pactWithVersion)
-    }
   }
 
   "getMostRecent" should {
-    "return None if none are found in mongo" in new SetUp {
+    "return None if none are found in mongo" in new SetUp:
       when(mockRepository.find(eqTo("consumer"), eqTo("provider"))).thenReturn(Future.successful(List.empty))
       val result: Option[PactWithVersion] = await(pactService.getMostRecent("provider", "consumer"))
       assert(result.isEmpty)
-    }
-    "return the pact if only one is found" in new SetUp {
+    "return the pact if only one is found" in new SetUp:
       when(mockRepository.find(eqTo("consumer"), eqTo("provider"))).thenReturn(Future.successful(List(pactWithVersion)))
       val result: Option[PactWithVersion] = await(pactService.getMostRecent("provider", "consumer"))
       assert(result contains pactWithVersion)
-    }
-    "return the most recent pact if there are multiple" in new SetUp {
+    "return the most recent pact if there are multiple" in new SetUp:
       when(mockRepository.find(eqTo("consumer"), eqTo("provider"))).thenReturn(Future.successful(List(pactWithVersion, pactWithOlderVersion)))
       val result: Option[PactWithVersion] = await(pactService.getMostRecent("provider", "consumer"))
       assert(result contains pactWithVersion)
-    }
   }
-}

@@ -19,9 +19,8 @@ package models
 import play.api.libs.json.{JsArray, Json, OFormat}
 
 final case class PactWithVersion(provider: MDTPService, consumer: MDTPService, version: Version, interactions: JsArray)
-object PactWithVersion {
+object PactWithVersion:
   implicit val fmt: OFormat[PactWithVersion] = Json.format
 
   def apply(provider: MDTPService, consumer: MDTPService, version: String, interactions: JsArray): PactWithVersion =
     apply(provider, consumer, Version(version), interactions)
-}

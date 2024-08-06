@@ -21,7 +21,7 @@ import org.scalatest.matchers.should
 import org.scalatest.wordspec.AnyWordSpec
 import scala.language.implicitConversions
 
-abstract class UnitSpec extends AnyWordSpec with should.Matchers with OptionValues {
+abstract class UnitSpec extends AnyWordSpec with should.Matchers with OptionValues:
   import play.api.mvc.Result
 
   import scala.concurrent.duration._
@@ -39,4 +39,3 @@ abstract class UnitSpec extends AnyWordSpec with should.Matchers with OptionValu
   def status(of: Result): Int = of.header.status
 
   def status(of: Future[Result])(implicit timeout: Duration): Int = status(Await.result(of, timeout))
-}

@@ -16,32 +16,27 @@
 
 package models
 
-final case class Version(major: Int, minor: Int, patch: Int) extends Ordered[Version] {
+final case class Version(major: Int, minor: Int, patch: Int) extends Ordered[Version]:
   override def toString: String = s"$major.$minor.$patch"
 
-  override def compare(that: Version): Int = {
-    val c = {
-      if that.major.compare(this.major) == 0 then {
+  override def compare(that: Version): Int =
+    val c =
+      if that.major.compare(this.major) == 0 then
         if that.minor.compare(this.minor) == 0 then that.patch.compare(this.patch)
         else that.minor.compare(this.minor)
-      } else that.major.compare(this.major)
-    }
+      else that.major.compare(this.major)
     c * -1
-  }
-}
 
-object Version {
+object Version:
   import play.api.libs.json.{Format, JsResult, JsString}
 
   import scala.util.Try
 
-  def apply(string: String): Version = string.split("\\.").toList match {
+  def apply(string: String): Version = string.split("\\.").toList match
     case List(major, minor, patch) => apply(major.toInt, minor.toInt, patch.toInt)
     case _                         => throw new IllegalArgumentException(s"version $string is invalid")
-  }
 
   implicit val fmt: Format[Version] = Format(
     _.validate[String].flatMap(str => JsResult fromTry Try(apply(str))),
     ver => JsString(ver.toString)
   )
-}

@@ -23,13 +23,13 @@ import repositories.AbstractPactBrokerRepository
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
-class PactService @Inject() (repo: AbstractPactBrokerRepository)(implicit ec: ExecutionContext) extends Logging {
+class PactService @Inject() (repo: AbstractPactBrokerRepository)(implicit ec: ExecutionContext) extends Logging:
 
   def makePact(inputPact: PactWithVersion): Pact = Pact(inputPact.provider, inputPact.consumer, inputPact.interactions)
 
   def addPactTest(producerId: String, consumerId: String, pactWithVersion: PactWithVersion): Future[Either[String, Unit]] = for
     optPact <- repo.find(consumerId, producerId, pactWithVersion.version.toString)
-    result <- optPact match {
+    result <- optPact match
                 case Some(res) if res.interactions == pactWithVersion.interactions =>
                   logger.info(s"[GG-5850] addPactTest: Identical PACT Found ${res.provider.name}/${res.consumer.name}/${res.version}")
                   Future.successful(Right(()))
@@ -47,7 +47,6 @@ class PactService @Inject() (repo: AbstractPactBrokerRepository)(implicit ec: Ex
                     )
                     result
                   }
-              }
   yield result
 
   def getVersionedPact(producerId: String, consumerId: String, version: String): Future[Option[PactWithVersion]] =
@@ -57,4 +56,3 @@ class PactService @Inject() (repo: AbstractPactBrokerRepository)(implicit ec: Ex
     repo.find(consumerId, producerId).map { pacts =>
       pacts.maxByOption(_.version)
     }
-}
