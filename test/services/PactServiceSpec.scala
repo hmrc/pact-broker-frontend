@@ -31,16 +31,17 @@ class PactServiceSpec extends UnitSpec with MockitoSugar {
     import repositories.AbstractPactBrokerRepository
     import AbstractPactBrokerRepository.WriteError
 
-    val mockRepository = mock[AbstractPactBrokerRepository]
-    val pactService: PactService = new PactService(mockRepository)
+    val mockRepository: AbstractPactBrokerRepository = mock[AbstractPactBrokerRepository]
+    val pactService:    PactService = new PactService(mockRepository)
     val provider = "Provider"
     val consumer = "Consumer"
     val version = "1.3.0"
-    val pactWithVersion = PactWithVersion(MDTPService(provider), MDTPService(consumer), "1.3.0", Json.arr("interactions", "abc"))
-    val pactWithDifferentInteractions =
+    val pactWithVersion: PactWithVersion = PactWithVersion(MDTPService(provider), MDTPService(consumer), "1.3.0", Json.arr("interactions", "abc"))
+    val pactWithDifferentInteractions: PactWithVersion =
       PactWithVersion(MDTPService(provider), MDTPService(consumer), "1.3.0", Json.arr("interactions", "different"))
-    val pactWithOlderVersion = PactWithVersion(MDTPService(provider), MDTPService(consumer), "1.0.0", Json.arr("interactions", "def"))
-    val pact = Pact(MDTPService(provider), MDTPService(consumer), Json.arr("interactions", "abc"))
+    val pactWithOlderVersion: PactWithVersion =
+      PactWithVersion(MDTPService(provider), MDTPService(consumer), "1.0.0", Json.arr("interactions", "def"))
+    val pact: Pact = Pact(MDTPService(provider), MDTPService(consumer), Json.arr("interactions", "abc"))
 
     protected val successWriteResult: Right[WriteError, Unit] = Future.successful(Right(()))
     protected val errorWriteResult:   Left[WriteError, Unit] = Future.successful(Left("Error"))
