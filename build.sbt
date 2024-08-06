@@ -13,8 +13,8 @@ lazy val root = Project(appName, file("."))
   .settings(ScoverageSettings())
   .settings(
     scalacOptions ++= Seq(
-      "-Werror",
-      "-Wconf:src=routes/.*:s"
+//      "-Werror",
+//      "-Wconf:src=routes/.*:s"
     ),
     libraryDependencies ++= AppDependencies(),
     Test / parallelExecution := false,

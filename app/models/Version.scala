@@ -16,9 +16,21 @@
 
 package models
 
-final case class Version(major: Int, minor: Int, patch: Int) {
+final case class Version(major: Int, minor: Int, patch: Int) extends Ordered[Version] {
   override def toString: String = s"$major.$minor.$patch"
+
+  override def compare(that: Version): Int = {
+    val c = {
+      if (that.major.compare(this.major) == 0) {
+        if (that.minor.compare(this.minor) == 0)
+          that.patch.compare(this.patch)
+        else that.minor.compare(this.minor)
+      } else that.major.compare(this.major)
+    }
+    c * -1
+  }
 }
+
 object Version {
   import play.api.libs.json.{Format, JsResult, JsString}
 
@@ -33,6 +45,4 @@ object Version {
     _.validate[String].flatMap(str => JsResult fromTry Try(apply(str))),
     ver => JsString(ver.toString)
   )
-
-  implicit val ord: Ordering[Version] = Ordering by unapply
 }

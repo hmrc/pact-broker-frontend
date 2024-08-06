@@ -55,7 +55,7 @@ class PactJsonLoader @Inject() extends Logging {
     val classPathElements = classPath.split(System.getProperty("path.separator")).toSet
     val classPathResources = classPathElements.flatMap(getResourcesFromClassPathElement(_, Pattern.compile(pattern))).toSeq
     val classPathResourcesNotFoundAlready =
-      classPathResources.filter(_.location.split("/").reverse.headOption.fold(false)(!resourceNamesInJar.contains(_)))
+      classPathResources.filter((r: PactJsonLocation) => r.location.split("/").reverse.headOption.fold(false)(!resourceNamesInJar.contains(_)))
 
     classPathResourcesNotFoundAlready ++ resourcePathsInJar
   }
@@ -84,8 +84,8 @@ class PactJsonLoader @Inject() extends Logging {
       (filteredEntries, entries)
     } match {
       case Success((found, total)) if found.nonEmpty =>
-        logger.info(s"[GG-5850] ${found.size}/${total.size} entries matched in ${jarFile.getName}."); found.map(ResourcePath)
-      case Success((found, _)) => found.map(ResourcePath)
+        logger.info(s"[GG-5850] ${found.size}/${total.size} entries matched in ${jarFile.getName}."); found.map(ResourcePath.apply)
+      case Success((found, _)) => found.map(ResourcePath.apply)
       case Failure(e)          => logger.error(s"[GG-5850] Error reading file: ${jarFile.getName}", e); Seq.empty[ResourcePath]
     }
   }
