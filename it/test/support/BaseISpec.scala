@@ -25,7 +25,7 @@ trait BaseISpec extends AnyWordSpec with should.Matchers with GuiceOneServerPerS
   import play.api.Application
   import play.api.inject.guice.GuiceApplicationBuilder
 
-  override lazy val fakeApplication: Application = GuiceApplicationBuilder()
+  override def fakeApplication(): Application = GuiceApplicationBuilder()
     .configure(additionalConfig)
     .build()
 
