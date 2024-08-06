@@ -27,7 +27,7 @@ class PactService @Inject() (repo: AbstractPactBrokerRepository)(implicit ec: Ex
 
   def makePact(inputPact: PactWithVersion): Pact = Pact(inputPact.provider, inputPact.consumer, inputPact.interactions)
 
-  def addPactTest(producerId: String, consumerId: String, pactWithVersion: PactWithVersion): Future[Either[String, Unit]] = for {
+  def addPactTest(producerId: String, consumerId: String, pactWithVersion: PactWithVersion): Future[Either[String, Unit]] = for
     optPact <- repo.find(consumerId, producerId, pactWithVersion.version.toString)
     result <- optPact match {
                 case Some(res) if res.interactions == pactWithVersion.interactions =>
@@ -48,7 +48,7 @@ class PactService @Inject() (repo: AbstractPactBrokerRepository)(implicit ec: Ex
                     result
                   }
               }
-  } yield result
+  yield result
 
   def getVersionedPact(producerId: String, consumerId: String, version: String): Future[Option[PactWithVersion]] =
     repo.find(consumerId, producerId, version)

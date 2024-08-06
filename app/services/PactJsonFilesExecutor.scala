@@ -36,7 +36,7 @@ class PactJsonFilesExecutor @Inject() (
 )(implicit executionContext: ExecutionContext)
     extends Logging {
 
-  if (pactConfig.pactFilesLoaderEnabled) {
+  if pactConfig.pactFilesLoaderEnabled then {
     lockService.withLock {
       logger.info(s"[GG-5850] Starting pact json file loader.")
       execute()

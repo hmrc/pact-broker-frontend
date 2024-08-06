@@ -21,9 +21,8 @@ final case class Version(major: Int, minor: Int, patch: Int) extends Ordered[Ver
 
   override def compare(that: Version): Int = {
     val c = {
-      if (that.major.compare(this.major) == 0) {
-        if (that.minor.compare(this.minor) == 0)
-          that.patch.compare(this.patch)
+      if that.major.compare(this.major) == 0 then {
+        if that.minor.compare(this.minor) == 0 then that.patch.compare(this.patch)
         else that.minor.compare(this.minor)
       } else that.major.compare(this.major)
     }

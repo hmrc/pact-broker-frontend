@@ -52,16 +52,16 @@ class ConsumerController @Inject() (
   }
 
   def getVersionedPact(producerId: String, consumerId: String, version: String): Action[AnyContent] = Action.async {
-    if (!version.matches("([0-9]+[.][0-9]+[.][0-9]+)")) Future.successful(BadRequest("incorrect version format"))
+    if !version.matches("([0-9]+[.][0-9]+[.][0-9]+)") then Future.successful(BadRequest("incorrect version format"))
     else {
-      for {
+      for
         exists <- pactService.getVersionedPact(producerId, consumerId, version)
         result <- exists match {
                     case None =>
                       Future.successful(NotFound(s"no pact found for version: $version between producer: $producerId to consumer: $consumerId"))
                     case Some(pact) => Future.successful(Ok(Json.toJson(pactService.makePact(pact))))
                   }
-      } yield result
+      yield result
     }
   }
 
@@ -74,7 +74,7 @@ class ConsumerController @Inject() (
 
   def deletePact(producerId: String, consumerId: String, version: String): Action[AnyContent] = Action.async {
     repo.removePact(producerId, consumerId, version) map { isSuccess =>
-      if (isSuccess) Ok else NotFound
+      if isSuccess then Ok else NotFound
     }
   }
 }

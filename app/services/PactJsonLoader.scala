@@ -62,11 +62,11 @@ class PactJsonLoader @Inject() extends Logging {
 
   private def getResourcesFromClassPathElement(element: String, pattern: Pattern): Seq[PactJsonLocation] = {
     val file = new File(element)
-    if (file.isDirectory) {
+    if file.isDirectory then {
       findFilesInDirectory(file, pattern)
-    } else if (file.isFile) {
-      if (element.endsWith("jar")) findResourcesInJarFile(file, pattern)
-      else if (element.matches(pattern.pattern())) {
+    } else if file.isFile then {
+      if element.endsWith("jar") then findResourcesInJarFile(file, pattern)
+      else if element.matches(pattern.pattern()) then {
         Seq(FilePath(element))
       } else {
         Seq.empty[PactJsonLocation]
@@ -106,7 +106,7 @@ class PactJsonLoader @Inject() extends Logging {
     logger.info(s"[GG-5850] ${resourcePaths.size} pact json files found, parsing..")
     resourcePaths.map { resourcePath =>
       val resourceName = resourcePath.location.split("/").last
-      val result = (for {
+      val result = (for
         version <- resourcePath.location match {
                      case jsonPactFileNameVersionRegex(s) => Right(s)
                      case _                               => Left(s"PACT JSON filename with missing/invalid version suffix - $resourceName")
@@ -129,7 +129,7 @@ class PactJsonLoader @Inject() extends Logging {
                   case JsSuccess(pact, _) => Right(pact)
                   case JsError(errors)    => Left(s"PACT JSON error in $resourceName - ${errors.head._1} - ${errors.head._2.head.message}")
                 }
-      } yield {
+      yield {
         PactWithVersion(pact.provider, pact.consumer, version, pact.interactions)
       }) match {
         case Left(errorMessage) =>
