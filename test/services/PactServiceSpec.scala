@@ -43,8 +43,8 @@ class PactServiceSpec extends UnitSpec with MockitoSugar {
       PactWithVersion(MDTPService(provider), MDTPService(consumer), "1.0.0", Json.arr("interactions", "def"))
     val pact: Pact = Pact(MDTPService(provider), MDTPService(consumer), Json.arr("interactions", "abc"))
 
-    protected val successWriteResult: Right[WriteError, Unit] = Future.successful(Right(()))
-    protected val errorWriteResult:   Left[WriteError, Unit] = Future.successful(Left("Error"))
+    protected val successWriteResult: Future[Either[WriteError, Unit]] = Future.successful(Right(()))
+    protected val errorWriteResult:   Future[Either[WriteError, Unit]] = Future.successful(Left("Error"))
   }
 
   "makePact" should {

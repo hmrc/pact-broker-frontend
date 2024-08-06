@@ -6,7 +6,7 @@ lazy val appName: String = "pact-broker-frontend"
 ThisBuild / majorVersion := 1
 //ThisBuild / scalaVersion := "2.13.12"
 ThisBuild / scalaVersion := "3.3.3"
-ThisBuild / crossScalaVersions ++= Seq("2.13.12", "3.3.3") // sbt ++2.13.12 clean test it/test
+//ThisBuild / crossScalaVersions ++= Seq("2.13.12", "3.3.3") // sbt ++2.13.12 clean test it/test
 
 lazy val root = Project(appName, file("."))
   .enablePlugins(play.sbt.PlayScala, SbtDistributablesPlugin)
