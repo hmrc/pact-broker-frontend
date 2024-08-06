@@ -4,7 +4,9 @@ import uk.gov.hmrc.DefaultBuildSettings
 
 lazy val appName: String = "pact-broker-frontend"
 ThisBuild / majorVersion := 1
-ThisBuild / scalaVersion := "2.13.12"
+//ThisBuild / scalaVersion := "2.13.12"
+ThisBuild / scalaVersion := "3.3.3"
+ThisBuild / crossScalaVersions ++= Seq("2.13.12", "3.3.3") // sbt ++2.13.12 clean test it/test
 
 lazy val root = Project(appName, file("."))
   .enablePlugins(play.sbt.PlayScala, SbtDistributablesPlugin)
@@ -21,7 +23,7 @@ lazy val root = Project(appName, file("."))
     resolvers += Resolver.jcenterRepo,
     retrieveManaged := true,
     scalafmtOnCompile := true,
-    Compile / packageDoc / publishArtifact  := false,
+    Compile / packageDoc / publishArtifact := false,
     Compile / doc / sources := Seq.empty
   )
   .disablePlugins(JUnitXmlReportPlugin)
