@@ -19,11 +19,12 @@ package controllers
 import helpers.UnitSpec
 import models.{MDTPService, Pact, PactWithVersion}
 import org.mockito.ArgumentMatchers.{any, eq => eqTo}
-import org.mockito.MockitoSugar
+import org.mockito.Mockito.when
+import org.scalatestplus.mockito.MockitoSugar
 import play.api.libs.json.{JsValue, Json}
 import play.api.mvc.{AnyContentAsEmpty, Result, Results}
 import play.api.test.FakeRequest
-import play.api.test.Helpers._
+import play.api.test.Helpers.*
 import services.PactService
 
 import scala.concurrent.ExecutionContext.Implicits.global

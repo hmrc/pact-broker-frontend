@@ -19,7 +19,8 @@ package services
 import helpers.UnitSpec
 import models.{MDTPService, Pact, PactWithVersion}
 import org.mockito.ArgumentMatchers.{eq => eqTo}
-import org.mockito.MockitoSugar
+import org.mockito.Mockito.when
+import org.scalatestplus.mockito.MockitoSugar
 import play.api.libs.json.Json
 
 import scala.concurrent.ExecutionContext.Implicits.global
