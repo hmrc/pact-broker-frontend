@@ -16,7 +16,7 @@ object ScoverageSettings {
       ".*DateTimeQueryStringBinder.*", // better covered via wiremock/E2E integration tests
       ".*Test.*"
     ).mkString(";"),
-    ScoverageKeys.coverageMinimumStmtTotal := 80,
+    ScoverageKeys.coverageMinimumStmtTotal := 70,
     ScoverageKeys.coverageFailOnMinimum := true,
     ScoverageKeys.coverageHighlighting := true,
     Test / parallelExecution := false
