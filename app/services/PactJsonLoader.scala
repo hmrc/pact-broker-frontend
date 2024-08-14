@@ -30,7 +30,7 @@ import scala.util.{Failure, Success, Try}
 import scala.jdk.CollectionConverters._
 
 @Singleton
-class PactJsonLoader @Inject() extends Logging:
+class PactJsonLoader @Inject() extends Logging {
 
   private val jsonPactFileNameVersionRegex = raw".*-([0-9]+\.[0-9]+\.[0-9]+)\.json".r
   private val jsonPactsPackageName = "pacts"
@@ -43,7 +43,7 @@ class PactJsonLoader @Inject() extends Logging:
     * @return
     *   the resources in the order they are found
     */
-  private def getResources(pattern: String): Seq[PactJsonLocation] =
+  private def getResources(pattern: String): Seq[PactJsonLocation] = {
     logger.info(s"[GG-5850] Searching for resources matching $pattern")
 
     val resourceNamesInJar = Source.fromResource(s"$jsonPactsPackageName/").mkString.split('\n').toSeq.filter(_.endsWith("json"))
@@ -57,8 +57,9 @@ class PactJsonLoader @Inject() extends Logging:
       classPathResources.filter((r: PactJsonLocation) => r.location.split("/").reverse.headOption.fold(false)(!resourceNamesInJar.contains(_)))
 
     classPathResourcesNotFoundAlready ++ resourcePathsInJar
+  }
 
-  private def getResourcesFromClassPathElement(element: String, pattern: Pattern): Seq[PactJsonLocation] =
+  private def getResourcesFromClassPathElement(element: String, pattern: Pattern): Seq[PactJsonLocation] = {
     val file = new File(element)
     if file.isDirectory then findFilesInDirectory(file, pattern)
     else if file.isFile then
@@ -66,6 +67,7 @@ class PactJsonLoader @Inject() extends Logging:
       else if element.matches(pattern.pattern()) then Seq(FilePath(element))
       else Seq.empty[PactJsonLocation]
     else Seq.empty[PactJsonLocation]
+  }
 
   private def findResourcesInJarFile(jarFile: File, pattern: Pattern): Seq[ResourcePath] =
     Try {
@@ -73,13 +75,14 @@ class PactJsonLoader @Inject() extends Logging:
       val entries = zipFile.entries.asScala.toSeq.map(_.getName)
       val filteredEntries = entries.filter(_.matches(pattern.pattern()))
       (filteredEntries, entries)
-    } match
+    } match {
       case Success((found, total)) if found.nonEmpty =>
         logger.info(s"[GG-5850] ${found.size}/${total.size} entries matched in ${jarFile.getName}."); found.map(ResourcePath.apply)
       case Success((found, _)) => found.map(ResourcePath.apply)
       case Failure(e)          => logger.error(s"[GG-5850] Error reading file: ${jarFile.getName}", e); Seq.empty[ResourcePath]
+    }
 
-  private def findFilesInDirectory(directory: File, pattern: Pattern): Seq[FilePath] =
+  private def findFilesInDirectory(directory: File, pattern: Pattern): Seq[FilePath] = {
     val fileList = directory.listFiles.toSeq
     val files = fileList
       .filter { file =>
@@ -88,13 +91,14 @@ class PactJsonLoader @Inject() extends Logging:
       }
       .map(f => FilePath(f.getCanonicalPath))
     files ++ fileList.filter(_.isDirectory).flatMap(findFilesInDirectory(_, pattern))
+  }
 
-  def loadPacts(): Seq[Either[String, PactWithVersion]] =
+  def loadPacts(): Seq[Either[String, PactWithVersion]] = {
     val resourcePaths = getResources(jsonPactResourcePathRegex.pattern.pattern())
     logger.info(s"[GG-5850] ${resourcePaths.size} pact json files found, parsing..")
     resourcePaths.map { resourcePath =>
       val resourceName = resourcePath.location.split("/").last
-      val result = (for
+      val result = (for {
         version <- resourcePath.location match {
                      case jsonPactFileNameVersionRegex(s) => Right(s)
                      case _                               => Left(s"PACT JSON filename with missing/invalid version suffix - $resourceName")
@@ -117,15 +121,18 @@ class PactJsonLoader @Inject() extends Logging:
                   case JsSuccess(pact, _) => Right(pact)
                   case JsError(errors)    => Left(s"PACT JSON error in $resourceName - ${errors.head._1} - ${errors.head._2.head.message}")
                 }
-      yield {
+      } yield {
         PactWithVersion(pact.provider, pact.consumer, version, pact.interactions)
-      }) match
+      }) match {
         case Left(errorMessage) =>
           logger.error(errorMessage)
           Left(errorMessage)
         case Right(pactWithVersion) => Right(pactWithVersion)
+      }
       result
     }
+  }
+}
 
 sealed abstract class PactJsonLocation(val location: String)
 case class ResourcePath(entry: String) extends PactJsonLocation(entry)

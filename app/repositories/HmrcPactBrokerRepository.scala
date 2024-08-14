@@ -36,7 +36,7 @@ class HmrcPactBrokerRepository @Inject() (mongoComponent: MongoComponent)(implic
         IndexModel(ascending("provider.name", "consumer.name", "version"))
       )
     )
-    with AbstractPactBrokerRepository:
+    with AbstractPactBrokerRepository {
   import org.mongodb.scala.model.Filters.{and, equal}
 
   def add(pact: PactWithVersion): Future[Either[WriteError, Unit]] =
@@ -78,3 +78,4 @@ class HmrcPactBrokerRepository @Inject() (mongoComponent: MongoComponent)(implic
       )
       .toFuture()
       .map(_ != null)
+}

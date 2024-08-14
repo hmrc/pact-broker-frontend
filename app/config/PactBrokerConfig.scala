@@ -20,6 +20,7 @@ import play.api.{Configuration, Logging}
 import javax.inject.{Inject, Singleton}
 
 @Singleton
-class PactBrokerConfig @Inject() (config: Configuration) extends Logging:
+class PactBrokerConfig @Inject() (config: Configuration) extends Logging {
 
   lazy val pactFilesLoaderEnabled: Boolean = config.get[Boolean]("pactFilesLoader.enabled")
+}

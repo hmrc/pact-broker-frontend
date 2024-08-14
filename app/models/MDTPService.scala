@@ -20,5 +20,6 @@ import play.api.libs.json.{Json, OFormat}
 
 case class MDTPService(name: String)
 
-object MDTPService:
+object MDTPService {
   implicit val format: OFormat[MDTPService] = Json.format[MDTPService]
+}

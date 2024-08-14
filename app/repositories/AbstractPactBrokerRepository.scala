@@ -16,7 +16,7 @@
 
 package repositories
 
-trait AbstractPactBrokerRepository:
+trait AbstractPactBrokerRepository {
   import AbstractPactBrokerRepository._
   import models.PactWithVersion
 
@@ -29,8 +29,10 @@ trait AbstractPactBrokerRepository:
   def find(consumerId: String, providerId: String): Future[Seq[PactWithVersion]]
 
   def removePact(providerId: String, consumerId: String, version: String): Future[IsSuccess]
-object AbstractPactBrokerRepository:
+}
+object AbstractPactBrokerRepository {
   type WriteError = String
   type IsSuccess = Boolean
 
   val collectionName = "pacts"
+}

@@ -20,12 +20,14 @@ import com.google.inject.{AbstractModule, Provides, Singleton}
 import repositories.{AbstractPactBrokerRepository, HmrcPactBrokerRepository}
 import services.PactJsonFilesExecutor
 
-class StartupModule extends AbstractModule:
+class StartupModule extends AbstractModule {
 
-  override def configure(): Unit =
+  override def configure(): Unit = {
     bind(classOf[AbstractPactBrokerRepository]).to(classOf[HmrcPactBrokerRepository])
     bind(classOf[PactJsonFilesExecutor]).asEagerSingleton()
-object StartupModule:
+  }
+}
+object StartupModule {
   import uk.gov.hmrc.mongo.lock.{LockService, MongoLockRepository}
 
   import scala.concurrent.duration.DurationInt
@@ -33,3 +35,4 @@ object StartupModule:
   @Provides @Singleton
   def getLockService(mongoLockRepository: MongoLockRepository): LockService =
     LockService(mongoLockRepository, lockId = "db-population-job", ttl = 5.minutes)
+}
