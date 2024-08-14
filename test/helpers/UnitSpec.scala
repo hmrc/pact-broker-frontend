@@ -24,7 +24,7 @@ import scala.language.implicitConversions
 abstract class UnitSpec extends AnyWordSpec with should.Matchers with OptionValues {
   import play.api.mvc.Result
 
-  import scala.concurrent.duration._
+  import scala.concurrent.duration.*
   import scala.concurrent.{Await, Future}
 
   implicit val defaultTimeout: FiniteDuration = 5.seconds

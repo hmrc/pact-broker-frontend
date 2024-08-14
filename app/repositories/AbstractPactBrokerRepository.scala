@@ -17,7 +17,7 @@
 package repositories
 
 trait AbstractPactBrokerRepository {
-  import AbstractPactBrokerRepository._
+  import AbstractPactBrokerRepository.*
   import models.PactWithVersion
 
   import scala.concurrent.Future

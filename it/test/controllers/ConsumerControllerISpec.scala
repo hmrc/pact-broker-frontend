@@ -17,12 +17,13 @@
 package controllers
 
 import play.api.http.{MimeTypes, Status}
+import play.api.libs.ws.writeableOf_JsValue
 import support.PactBrokerScISpec
 
 class ConsumerControllerISpec extends PactBrokerScISpec with MimeTypes with Status {
   import play.api.libs.json.Json
 
-  override def additionalConfig: Map[String, _] = super.additionalConfig ++ Map(
+  override def additionalConfig: Map[String, ?] = super.additionalConfig ++ Map(
     "application.router" -> "testOnlyDoNotUseInAppConf.Routes"
   )
 

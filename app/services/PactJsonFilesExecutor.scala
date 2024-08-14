@@ -29,10 +29,10 @@ case class PactJsonFilesExecutorResult(errorCount: Int, successCount: Int)
 
 @Singleton
 class PactJsonFilesExecutor @Inject() (
-  lockService:     LockService,
+  lockService: LockService,
   pactFilesLoader: PactJsonLoader,
-  pactConfig:      PactBrokerConfig,
-  pactService:     PactService
+  pactConfig: PactBrokerConfig,
+  pactService: PactService
 )(implicit executionContext: ExecutionContext)
     extends Logging {
 

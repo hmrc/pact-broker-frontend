@@ -29,8 +29,8 @@ import scala.concurrent.{ExecutionContext, Future}
 @Singleton
 class ConsumerController @Inject() (
   override val controllerComponents: ControllerComponents,
-  repo:                              AbstractPactBrokerRepository,
-  pactService:                       PactService
+  repo: AbstractPactBrokerRepository,
+  pactService: PactService
 )(implicit ec: ExecutionContext)
     extends BackendBaseController {
 

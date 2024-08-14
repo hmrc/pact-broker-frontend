@@ -27,7 +27,7 @@ import javax.inject.{Inject, Singleton}
 import scala.io.Source
 import scala.util.{Failure, Success, Try}
 
-import scala.jdk.CollectionConverters._
+import scala.jdk.CollectionConverters.*
 
 @Singleton
 class PactJsonLoader @Inject() extends Logging {

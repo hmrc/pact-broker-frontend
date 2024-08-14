@@ -18,7 +18,7 @@ package services
 
 import helpers.UnitSpec
 import models.{MDTPService, Pact, PactWithVersion}
-import org.mockito.ArgumentMatchers.{eq => eqTo}
+import org.mockito.ArgumentMatchers.eq as eqTo
 import org.mockito.Mockito.when
 import org.scalatestplus.mockito.MockitoSugar
 import play.api.libs.json.Json
@@ -32,7 +32,7 @@ class PactServiceSpec extends UnitSpec with MockitoSugar {
     import AbstractPactBrokerRepository.WriteError
 
     val mockRepository: AbstractPactBrokerRepository = mock[AbstractPactBrokerRepository]
-    val pactService:    PactService = new PactService(mockRepository)
+    val pactService: PactService = new PactService(mockRepository)
     val provider = "Provider"
     val consumer = "Consumer"
     val version = "1.3.0"
@@ -44,7 +44,7 @@ class PactServiceSpec extends UnitSpec with MockitoSugar {
     val pact: Pact = Pact(MDTPService(provider), MDTPService(consumer), Json.arr("interactions", "abc"))
 
     protected val successWriteResult: Future[Either[WriteError, Unit]] = Future.successful(Right(()))
-    protected val errorWriteResult:   Future[Either[WriteError, Unit]] = Future.successful(Left("Error"))
+    protected val errorWriteResult: Future[Either[WriteError, Unit]] = Future.successful(Left("Error"))
   }
 
   "makePact" should {
