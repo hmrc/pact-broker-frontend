@@ -11,7 +11,7 @@ lazy val root = Project(appName, file("."))
   .settings(ScoverageSettings())
   .settings(
     scalacOptions ++= Seq(
-//      "-Werror",
+//      "-Xfatal-warnings"
 //      "-Wconf:src=routes/.*:s"
     ),
     libraryDependencies ++= AppDependencies(),
