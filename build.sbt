@@ -11,6 +11,7 @@ lazy val root = Project(appName, file("."))
   .settings(ScoverageSettings())
   .settings(
     scalacOptions ++= Seq(
+      // The following compiler options are commented out as some features are still unsupported in Scala 3.3.3. We should be able to uncomment with Scala 3.3.4.
 //      "-Xfatal-warnings"
 //      "-Wconf:src=routes/.*:s"
     ),
