@@ -17,10 +17,10 @@
 package config
 
 import com.google.inject.{AbstractModule, Provides, Singleton}
+import repositories.{AbstractPactBrokerRepository, HmrcPactBrokerRepository}
+import services.PactJsonFilesExecutor
 
 class StartupModule extends AbstractModule {
-  import repositories.{AbstractPactBrokerRepository, HmrcPactBrokerRepository}
-  import services.PactJsonFilesExecutor
 
   override def configure(): Unit = {
     bind(classOf[AbstractPactBrokerRepository]).to(classOf[HmrcPactBrokerRepository])

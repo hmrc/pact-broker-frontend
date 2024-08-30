@@ -29,14 +29,14 @@ case class PactJsonFilesExecutorResult(errorCount: Int, successCount: Int)
 
 @Singleton
 class PactJsonFilesExecutor @Inject() (
-  lockService:     LockService,
+  lockService: LockService,
   pactFilesLoader: PactJsonLoader,
-  pactConfig:      PactBrokerConfig,
-  pactService:     PactService
+  pactConfig: PactBrokerConfig,
+  pactService: PactService
 )(implicit executionContext: ExecutionContext)
     extends Logging {
 
-  if (pactConfig.pactFilesLoaderEnabled) {
+  if pactConfig.pactFilesLoaderEnabled then
     lockService.withLock {
       logger.info(s"[GG-5850] Starting pact json file loader.")
       execute()
@@ -49,9 +49,7 @@ class PactJsonFilesExecutor @Inject() (
       case Failure(e) => logger.error(s"[GG-5850] Error while running pact json file loader.", e)
       case _          => ()
     }
-  } else {
-    logger.warn(s"[GG-5850] Pact files loader is disabled in config.")
-  }
+  else logger.warn(s"[GG-5850] Pact files loader is disabled in config.")
 
   def execute(): Future[PactJsonFilesExecutorResult] = {
     val pactFileLoadResults = pactFilesLoader.loadPacts()
@@ -79,5 +77,4 @@ class PactJsonFilesExecutor @Inject() (
       })
       .map(results => PactJsonFilesExecutorResult(errors.size + results.count(_.isLeft), results.count(_.isRight)))
   }
-
 }

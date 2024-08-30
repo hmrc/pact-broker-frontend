@@ -18,8 +18,9 @@ package services
 
 import helpers.UnitSpec
 import models.{MDTPService, Pact, PactWithVersion}
-import org.mockito.ArgumentMatchers.{eq => eqTo}
-import org.mockito.MockitoSugar
+import org.mockito.ArgumentMatchers.eq as eqTo
+import org.mockito.Mockito.when
+import org.scalatestplus.mockito.MockitoSugar
 import play.api.libs.json.Json
 
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -30,19 +31,20 @@ class PactServiceSpec extends UnitSpec with MockitoSugar {
     import repositories.AbstractPactBrokerRepository
     import AbstractPactBrokerRepository.WriteError
 
-    val mockRepository = mock[AbstractPactBrokerRepository]
+    val mockRepository: AbstractPactBrokerRepository = mock[AbstractPactBrokerRepository]
     val pactService: PactService = new PactService(mockRepository)
     val provider = "Provider"
     val consumer = "Consumer"
     val version = "1.3.0"
-    val pactWithVersion = PactWithVersion(MDTPService(provider), MDTPService(consumer), "1.3.0", Json.arr("interactions", "abc"))
-    val pactWithDifferentInteractions =
+    val pactWithVersion: PactWithVersion = PactWithVersion(MDTPService(provider), MDTPService(consumer), "1.3.0", Json.arr("interactions", "abc"))
+    val pactWithDifferentInteractions: PactWithVersion =
       PactWithVersion(MDTPService(provider), MDTPService(consumer), "1.3.0", Json.arr("interactions", "different"))
-    val pactWithOlderVersion = PactWithVersion(MDTPService(provider), MDTPService(consumer), "1.0.0", Json.arr("interactions", "def"))
-    val pact = Pact(MDTPService(provider), MDTPService(consumer), Json.arr("interactions", "abc"))
+    val pactWithOlderVersion: PactWithVersion =
+      PactWithVersion(MDTPService(provider), MDTPService(consumer), "1.0.0", Json.arr("interactions", "def"))
+    val pact: Pact = Pact(MDTPService(provider), MDTPService(consumer), Json.arr("interactions", "abc"))
 
-    protected val successWriteResult: Right[WriteError, Unit] = Future.successful(Right(()))
-    protected val errorWriteResult:   Left[WriteError, Unit] = Future.successful(Left("Error"))
+    protected val successWriteResult: Future[Either[WriteError, Unit]] = Future.successful(Right(()))
+    protected val errorWriteResult: Future[Either[WriteError, Unit]] = Future.successful(Left("Error"))
   }
 
   "makePact" should {

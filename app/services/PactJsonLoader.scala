@@ -27,11 +27,10 @@ import javax.inject.{Inject, Singleton}
 import scala.io.Source
 import scala.util.{Failure, Success, Try}
 
+import scala.jdk.CollectionConverters.*
+
 @Singleton
 class PactJsonLoader @Inject() extends Logging {
-  import PactJsonLoader._
-
-  import scala.jdk.CollectionConverters._
 
   private val jsonPactFileNameVersionRegex = raw".*-([0-9]+\.[0-9]+\.[0-9]+)\.json".r
   private val jsonPactsPackageName = "pacts"
@@ -55,28 +54,22 @@ class PactJsonLoader @Inject() extends Logging {
     val classPathElements = classPath.split(System.getProperty("path.separator")).toSet
     val classPathResources = classPathElements.flatMap(getResourcesFromClassPathElement(_, Pattern.compile(pattern))).toSeq
     val classPathResourcesNotFoundAlready =
-      classPathResources.filter(_.location.split("/").reverse.headOption.fold(false)(!resourceNamesInJar.contains(_)))
+      classPathResources.filter((r: PactJsonLocation) => r.location.split("/").reverse.headOption.fold(false)(!resourceNamesInJar.contains(_)))
 
     classPathResourcesNotFoundAlready ++ resourcePathsInJar
   }
 
   private def getResourcesFromClassPathElement(element: String, pattern: Pattern): Seq[PactJsonLocation] = {
     val file = new File(element)
-    if (file.isDirectory) {
-      findFilesInDirectory(file, pattern)
-    } else if (file.isFile) {
-      if (element.endsWith("jar")) findResourcesInJarFile(file, pattern)
-      else if (element.matches(pattern.pattern())) {
-        Seq(FilePath(element))
-      } else {
-        Seq.empty[PactJsonLocation]
-      }
-    } else {
-      Seq.empty[PactJsonLocation]
-    }
+    if file.isDirectory then findFilesInDirectory(file, pattern)
+    else if file.isFile then
+      if element.endsWith("jar") then findResourcesInJarFile(file, pattern)
+      else if element.matches(pattern.pattern()) then Seq(FilePath(element))
+      else Seq.empty[PactJsonLocation]
+    else Seq.empty[PactJsonLocation]
   }
 
-  private def findResourcesInJarFile(jarFile: File, pattern: Pattern): Seq[ResourcePath] = {
+  private def findResourcesInJarFile(jarFile: File, pattern: Pattern): Seq[ResourcePath] =
     Try {
       val zipFile = new ZipFile(jarFile)
       val entries = zipFile.entries.asScala.toSeq.map(_.getName)
@@ -84,11 +77,10 @@ class PactJsonLoader @Inject() extends Logging {
       (filteredEntries, entries)
     } match {
       case Success((found, total)) if found.nonEmpty =>
-        logger.info(s"[GG-5850] ${found.size}/${total.size} entries matched in ${jarFile.getName}."); found.map(ResourcePath)
-      case Success((found, _)) => found.map(ResourcePath)
+        logger.info(s"[GG-5850] ${found.size}/${total.size} entries matched in ${jarFile.getName}."); found.map(ResourcePath.apply)
+      case Success((found, _)) => found.map(ResourcePath.apply)
       case Failure(e)          => logger.error(s"[GG-5850] Error reading file: ${jarFile.getName}", e); Seq.empty[ResourcePath]
     }
-  }
 
   private def findFilesInDirectory(directory: File, pattern: Pattern): Seq[FilePath] = {
     val fileList = directory.listFiles.toSeq
@@ -141,8 +133,7 @@ class PactJsonLoader @Inject() extends Logging {
     }
   }
 }
-object PactJsonLoader {
-  private sealed abstract class PactJsonLocation(val location: String)
-  private case class ResourcePath(entry: String) extends PactJsonLocation(entry)
-  private case class FilePath(path: String)      extends PactJsonLocation(path)
-}
+
+sealed abstract class PactJsonLocation(val location: String)
+case class ResourcePath(entry: String) extends PactJsonLocation(entry)
+case class FilePath(path: String)      extends PactJsonLocation(path)

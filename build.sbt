@@ -4,15 +4,16 @@ import uk.gov.hmrc.DefaultBuildSettings
 
 lazy val appName: String = "pact-broker-frontend"
 ThisBuild / majorVersion := 1
-ThisBuild / scalaVersion := "2.13.12"
+ThisBuild / scalaVersion := "3.3.3"
 
 lazy val root = Project(appName, file("."))
   .enablePlugins(play.sbt.PlayScala, SbtDistributablesPlugin)
   .settings(ScoverageSettings())
   .settings(
     scalacOptions ++= Seq(
-      "-Werror",
-      "-Wconf:src=routes/.*:s"
+      // The following compiler options are commented out as some features are still unsupported in Scala 3.3.3. We should be able to uncomment with Scala 3.3.4.
+//      "-Xfatal-warnings"
+//      "-Wconf:src=routes/.*:s"
     ),
     libraryDependencies ++= AppDependencies(),
     Test / parallelExecution := false,
@@ -21,7 +22,7 @@ lazy val root = Project(appName, file("."))
     resolvers += Resolver.jcenterRepo,
     retrieveManaged := true,
     scalafmtOnCompile := true,
-    Compile / packageDoc / publishArtifact  := false,
+    Compile / packageDoc / publishArtifact := false,
     Compile / doc / sources := Seq.empty
   )
   .disablePlugins(JUnitXmlReportPlugin)

@@ -29,8 +29,8 @@ import scala.concurrent.{ExecutionContext, Future}
 @Singleton
 class ConsumerController @Inject() (
   override val controllerComponents: ControllerComponents,
-  repo:                              AbstractPactBrokerRepository,
-  pactService:                       PactService
+  repo: AbstractPactBrokerRepository,
+  pactService: PactService
 )(implicit ec: ExecutionContext)
     extends BackendBaseController {
 
@@ -52,8 +52,8 @@ class ConsumerController @Inject() (
   }
 
   def getVersionedPact(producerId: String, consumerId: String, version: String): Action[AnyContent] = Action.async {
-    if (!version.matches("([0-9]+[.][0-9]+[.][0-9]+)")) Future.successful(BadRequest("incorrect version format"))
-    else {
+    if !version.matches("([0-9]+[.][0-9]+[.][0-9]+)") then Future.successful(BadRequest("incorrect version format"))
+    else
       for {
         exists <- pactService.getVersionedPact(producerId, consumerId, version)
         result <- exists match {
@@ -62,7 +62,6 @@ class ConsumerController @Inject() (
                     case Some(pact) => Future.successful(Ok(Json.toJson(pactService.makePact(pact))))
                   }
       } yield result
-    }
   }
 
   def getLatestPact(producerId: String, consumerId: String): Action[AnyContent] = Action.async {
@@ -74,7 +73,7 @@ class ConsumerController @Inject() (
 
   def deletePact(producerId: String, consumerId: String, version: String): Action[AnyContent] = Action.async {
     repo.removePact(producerId, consumerId, version) map { isSuccess =>
-      if (isSuccess) Ok else NotFound
+      if isSuccess then Ok else NotFound
     }
   }
 }

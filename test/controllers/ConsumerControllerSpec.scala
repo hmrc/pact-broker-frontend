@@ -18,12 +18,15 @@ package controllers
 
 import helpers.UnitSpec
 import models.{MDTPService, Pact, PactWithVersion}
-import org.mockito.ArgumentMatchers.{any, eq => eqTo}
-import org.mockito.MockitoSugar
+import org.mockito.ArgumentMatchers.{any, eq as eqTo}
+import org.mockito.Mockito.when
+import org.mockito.invocation.InvocationOnMock
+import org.mockito.stubbing.Answer
+import org.scalatestplus.mockito.MockitoSugar
 import play.api.libs.json.{JsValue, Json}
 import play.api.mvc.{AnyContentAsEmpty, Result, Results}
 import play.api.test.FakeRequest
-import play.api.test.Helpers._
+import play.api.test.Helpers.*
 import services.PactService
 
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -34,20 +37,21 @@ class ConsumerControllerSpec extends UnitSpec with MockitoSugar with Results {
     import repositories.AbstractPactBrokerRepository
 
     val mockPactBrokerRepository: AbstractPactBrokerRepository = mock[AbstractPactBrokerRepository]
-    val mockPactService:          PactService = mock[PactService]
+    val mockPactService: PactService = mock[PactService]
     val consumerController = new ConsumerController(stubControllerComponents(), mockPactBrokerRepository, mockPactService)
 
-    val goodPact = Pact(MDTPService("Provider"), MDTPService("Consumer"), Json.arr("interactions", ""))
+    val goodPact: Pact = Pact(MDTPService("Provider"), MDTPService("Consumer"), Json.arr("interactions", ""))
     val badPact: JsValue = Json.toJson("""{"provider" : {"name" : "Provider"},"consumer" : {"name" : "Consumer"}}""")
 
-    val getRequest:  FakeRequest[AnyContentAsEmpty.type] = FakeRequest("GET", "/")
+    val getRequest: FakeRequest[AnyContentAsEmpty.type] = FakeRequest("GET", "/")
     val goodRequest: FakeRequest[JsValue] = FakeRequest("PUT", "/").withBody(Json.toJson(goodPact))
-    val badRequest:  FakeRequest[JsValue] = FakeRequest("PUT", "/").withBody(Json.toJson(badPact))
+    val badRequest: FakeRequest[JsValue] = FakeRequest("PUT", "/").withBody(Json.toJson(badPact))
 
-    val goodPactWithVersion = PactWithVersion(MDTPService("Provider"), MDTPService("Consumer"), "1.0.0", Json.arr("interactions", ""))
-    val newPactWithVersion =
+    val goodPactWithVersion: PactWithVersion =
+      PactWithVersion(MDTPService("Provider"), MDTPService("Consumer"), "1.0.0", Json.arr("interactions", ""))
+    val newPactWithVersion: PactWithVersion =
       PactWithVersion(MDTPService("Provider"), MDTPService("Consumer"), "1.5.3", Json.arr("interactions", "this is a new pact"))
-    val differentPactWithVersion =
+    val differentPactWithVersion: PactWithVersion =
       PactWithVersion(MDTPService("Provider"), MDTPService("Consumer"), "1.0.0", Json.arr("interactions", "a"))
   }
 
@@ -83,8 +87,11 @@ class ConsumerControllerSpec extends UnitSpec with MockitoSugar with Results {
   "getVersionedPact" should {
     "return a pact when given correct provider, consumer and a match is found" in new SetUp {
       when(mockPactService.getVersionedPact(any(), any(), any())) thenReturn Future.successful(Some(goodPactWithVersion))
-      when(mockPactService.makePact(goodPactWithVersion)).thenAnswer((inputPact: PactWithVersion) => {
-        new Pact(inputPact.provider, inputPact.consumer, inputPact.interactions)
+      when(mockPactService.makePact(goodPactWithVersion)).thenAnswer(new Answer[Pact]() {
+        def answer(i: InvocationOnMock): Pact = {
+          val inputPact: PactWithVersion = i.getArgument(0)
+          new Pact(inputPact.provider, inputPact.consumer, inputPact.interactions)
+        }
       })
       val result: Result = await(consumerController.getVersionedPact("provider", "consumer", "1.0.0")(getRequest))
       status(result) shouldBe OK
@@ -116,8 +123,11 @@ class ConsumerControllerSpec extends UnitSpec with MockitoSugar with Results {
       when {
         mockPactService.getMostRecent(eqTo("provider"), eqTo("consumer"))
       } thenReturn Future.successful(Some(goodPactWithVersion))
-      when(mockPactService.makePact(goodPactWithVersion)).thenAnswer((inputPact: PactWithVersion) => {
-        new Pact(inputPact.provider, inputPact.consumer, inputPact.interactions)
+      when(mockPactService.makePact(goodPactWithVersion)).thenAnswer(new Answer[Pact]() {
+        def answer(i: InvocationOnMock): Pact = {
+          val inputPact: PactWithVersion = i.getArgument(0)
+          new Pact(inputPact.provider, inputPact.consumer, inputPact.interactions)
+        }
       })
       val result: Future[Result] = consumerController.getLatestPact("provider", "consumer")(getRequest)
       status(result) shouldBe OK

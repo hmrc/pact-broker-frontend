@@ -17,10 +17,10 @@
 package services
 
 import support.BaseISpec
+import models.{MDTPService, PactWithVersion}
+import play.api.libs.json.JsArray
 
 class PactJsonLoaderISpec extends BaseISpec {
-  import models.{MDTPService, PactWithVersion}
-  import play.api.libs.json.JsArray
 
   private val pactJsonLoader = app.injector.instanceOf[PactJsonLoader]
 
