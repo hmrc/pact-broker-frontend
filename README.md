@@ -38,6 +38,12 @@ Uses default JVM settings. Requires the following services:
 sbt 'run -Dapplication.router=testOnlyDoNotUseInAppConf.Routes
 ```
 
+## How to test
+
+```sbtshell
+sbt clean coverage test it/test coverageReport
+```
+
 ## API
 
 | Path                                                                                    | Supported Methods | Description                                            |
