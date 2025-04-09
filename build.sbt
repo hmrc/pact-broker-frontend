@@ -4,7 +4,7 @@ import uk.gov.hmrc.DefaultBuildSettings
 
 lazy val appName: String = "pact-broker-frontend"
 ThisBuild / majorVersion := 1
-ThisBuild / scalaVersion := "3.3.3"
+ThisBuild / scalaVersion := "3.3.4"
 
 lazy val root = Project(appName, file("."))
   .enablePlugins(play.sbt.PlayScala, SbtDistributablesPlugin)
