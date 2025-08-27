@@ -20,7 +20,6 @@ import com.google.inject.{Inject, Singleton}
 import models.PactWithVersion
 import org.mongodb.scala.model.IndexModel
 import org.mongodb.scala.model.Indexes.ascending
-import org.mongodb.scala.{ObservableFuture, SingleObservableFuture}
 import repositories.AbstractPactBrokerRepository.*
 import uk.gov.hmrc.mongo.MongoComponent
 import uk.gov.hmrc.mongo.play.json.PlayMongoRepository
