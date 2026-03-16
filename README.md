@@ -35,7 +35,7 @@ Uses default JVM settings. Requires the following services:
 - `DATASTREAM`: required for ITs. Run with `sm2 --start DATASTREAM`.
 
 ```sbtshell
-sbt 'run -Dapplication.router=testOnlyDoNotUseInAppConf.Routes
+sbt 'run -Dapplication.router=testOnlyDoNotUseInAppConf.Routes'
 ```
 
 ## How to test
