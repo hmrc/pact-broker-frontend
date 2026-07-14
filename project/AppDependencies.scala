@@ -1,7 +1,7 @@
 import sbt.*
 
 object AppDependencies {
-  private val bootstrapVer = "10.7.0"
+  private val bootstrapVer = "10.8.0"
   private val hmrcMongoVer = "2.12.0"
 
   private val compile = Seq(
