@@ -22,7 +22,7 @@ A service that wishes to utilise the **`sbt pactPush`**  command will require a 
 For an example of how to generate pacts, configure pact.sbt and push pacts to the broker
 see [auth-team-contract-tests-maker](https://github.com/hmrc/auth-team-contract-tests-maker)
 
-##Pre-loaded pacts
+## Pre-loaded pacts
 Pact json files in this projects conf/pacts folder (with a valid version suffix in the filename) will be automatically
 stored in the database when the service starts up.
 
@@ -195,6 +195,10 @@ Create a new pact
 | 500    | Unexpected error                             | UNEXPECTED_ERROR |      |
 
 ## GET
+  Example call
+```
+curl http://localhost:9866/pact-broker/pacts/provider/bas-proxy/consumer/auth-contract-tests/version/1.0.0 
+```
 
 ### Success Response
 
@@ -226,4 +230,4 @@ Create a new pact
 ### License
 
 This code is open source software licensed under
-the [Apache 2.0 License]("http://www.apache.org/licenses/LICENSE-2.0.html")
+the [Apache 2.0 License](http://www.apache.org/licenses/LICENSE-2.0.html)
